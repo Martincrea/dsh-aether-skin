@@ -1,0 +1,56 @@
+{
+  "name": "@local/dsh-aether-skin",
+  "version": "1.6.0",
+  "description": "AETHER · 静默科技 — a deep-space, silver-metal DSH skin: token-driven palette, glass workspace panels, a faint star-river background, and an in-app skin console.",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md"
+  ],
+  "dsh": {
+    "manifestVersion": 1,
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-slots",
+        "@deepseek-ai/dsh-client-ui-theme"
+      ]
+    }
+  },
+  "license": "MIT",
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "skin",
+    "theme",
+    "plugin",
+    "glassmorphism",
+    "dark-mode"
+  ],
+  "author": "miaoguoqing",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/miaoguoqing/dsh-aether-skin.git"
+  },
+  "homepage": "https://github.com/miaoguoqing/dsh-aether-skin",
+  "bugs": {
+    "url": "https://github.com/miaoguoqing/dsh-aether-skin/issues"
+  }
+}

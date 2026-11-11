@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="AETHER">
+  <defs>
+    <linearGradient id="aether-metal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="0.45" stop-color="#E6ECF3"/>
+      <stop offset="1" stop-color="#8E9CAD"/>
+    </linearGradient>
+    <radialGradient id="aether-core" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#DCEBFF"/>
+      <stop offset="1" stop-color="#8FC7FF"/>
+    </radialGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#05070A"/>
+  <rect x="6.5" y="6.5" width="51" height="51" rx="10" fill="none" stroke="#1D2530"/>
+  <circle cx="32" cy="32" r="15.5" fill="none" stroke="url(#aether-metal)" stroke-width="2.5"
+          stroke-linecap="round" stroke-dasharray="74 23" transform="rotate(-58 32 32)"/>
+  <circle cx="32" cy="32" r="3" fill="url(#aether-core)"/>
+</svg>
