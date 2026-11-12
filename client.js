@@ -23,7 +23,7 @@ window.__ModuleLoader__.load({
 
     var SOURCE = '@local/dsh-aether-skin';
     var STORAGE_KEY = 'dsh-aether-skin.v1';
-    var VERSION = '1.9.2';
+    var VERSION = '1.9.3';
 
     // ══════════════════════════════════════════════════════════════════════
     // 1. Palette — every value is a [light, dark] pair.
@@ -851,6 +851,7 @@ window.__ModuleLoader__.load({
       'background:transparent !important;box-shadow:none !important;border-radius:0;}',
       'body[data-ae-rows="on"] .ae-sidebar [data-row-key]:before{content:"";position:absolute;z-index:-1;',
       'inset:1px calc(var(--ae-card-inset,4px) - var(--ae-ring-right-fix,0px)) 1px var(--ae-card-inset,4px);',
+      'border-radius:16px;background:var(--ae-card-bg);',
       'box-shadow:0 0 0 1px var(--ae-card-ring),var(--ae-card-hi),var(--ae-card-shadow);',
       'transition:transform 220ms cubic-bezier(.16,1,.3,1),box-shadow 220ms cubic-bezier(.16,1,.3,1),',
       'background-color 220ms ease-out;}',
@@ -882,7 +883,7 @@ window.__ModuleLoader__.load({
       '0 18px 34px -16px rgba(0,0,0,.8) !important;}',
       /* ── workspace vs conversation: containers lead, leaves follow ─── */
       'body[data-ae-rows="on"] .ae-sidebar [data-row-key^="workspace:"]:before{',
-      'border-radius:14px;background:var(--ae-ws-bg);',
+      'border-radius:16px;background:var(--ae-ws-bg);',
       'box-shadow:0 0 0 1px var(--ae-ws-ring),inset 0 1px 0 rgba(255,255,255,.1),',
       '0 14px 26px -18px rgba(0,0,0,.85);}',
       'body[data-ae-rows="on"]:not([data-ds-dark-theme]) .ae-sidebar [data-row-key^="workspace:"]:before{',
