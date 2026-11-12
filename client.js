@@ -23,7 +23,7 @@ window.__ModuleLoader__.load({
 
     var SOURCE = '@local/dsh-aether-skin';
     var STORAGE_KEY = 'dsh-aether-skin.v1';
-    var VERSION = '1.7.0';
+    var VERSION = '1.8.0';
 
     // ══════════════════════════════════════════════════════════════════════
     // 1. Palette — every value is a [light, dark] pair.
@@ -385,7 +385,7 @@ window.__ModuleLoader__.load({
     // Star river intensity → opacity multiplier applied by the stylesheet.
     var LEVELS = { subtle: 0.8, medium: 1.05, rich: 1.42 };
     var DEPTHS = { soft: 1, normal: 1, strong: 1 };
-    var DEFAULTS = { enabled: true, accent: 'ice', veil: true, galaxy: true, galaxyLevel: 'subtle', glass: true, depth: 'strong' };
+    var DEFAULTS = { enabled: true, accent: 'ice', veil: true, galaxy: true, galaxyLevel: 'subtle', glass: false, depth: 'strong' };
 
     function normaliseDepth(value) {
       return typeof value === 'string' && Object.prototype.hasOwnProperty.call(DEPTHS, value) ? value : DEFAULTS.depth;
@@ -946,6 +946,19 @@ window.__ModuleLoader__.load({
       'body[data-ae-glass="on"][data-ae-depth="strong"] .ae-sidebar [data-row-key][aria-selected="true"]:hover:before{',
       'transform:translateY(-3.6px) scale(1.012);}}',
 
+      /* ── conversation surface ───────────────────────────────────────
+         The host only rounds the top-left corner of this track; round all
+         four and give the sheet a little breathing room, so the conversation
+         reads as one calm surface instead of a full-bleed rectangle. Nothing
+         inside moves: the column keeps its track, the host keeps scroll and
+         the composer. */
+      'body[data-ae-main="on"] .ae-main{',
+      'border-radius:clamp(13px,1.5vw,19px) !important;overflow:hidden !important;',
+      'margin:clamp(4px,.55vw,7px) clamp(5px,.7vw,9px) clamp(4px,.55vw,7px) clamp(5px,.7vw,9px) !important;',
+      'box-shadow:0 0 0 1px var(--dsw-alias-border-l1),0 22px 48px -30px rgba(0,0,0,.72);',
+      'background-clip:padding-box !important;}',
+      'body[data-ae-main="on"]:not([data-ds-dark-theme]) .ae-main{',
+      'box-shadow:0 0 0 1px var(--dsw-alias-border-l2),0 20px 42px -30px rgba(15,23,42,.3);}',
       /* ── motion budget: honour the system setting ────────────────── */
       '@media (prefers-reduced-motion:reduce){.ae-switch,.ae-knob,.ae-segbtn,.ae-btn,.ae-input{transition:none;}',
       'body[data-ae-glass="on"] .ae-sidebar [data-row-key]:before{transition:none;}',
@@ -1406,6 +1419,7 @@ window.__ModuleLoader__.load({
         var hostResize = null;
         var SIDEBAR_CLASS = 'ae-sidebar';
         var RAIL_CLASS = 'ae-rail';
+        var MAIN_CLASS = 'ae-main';
 
         function findSidebar() {
           if (typeof document === 'undefined' || typeof document.querySelector !== 'function') return null;
@@ -1456,18 +1470,39 @@ window.__ModuleLoader__.load({
           var frame = side.parentElement;
           if (frame && hostObserver === null && typeof MutationObserver !== 'undefined') {
             hostObserver = new MutationObserver(function () {
-              tagSidebar();
+              var el = tagSidebar();
+              if (el !== null) tagMain(el);
             });
             hostObserver.observe(frame, { childList: true });
           }
           if (frame && hostResize === null && typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
             hostResize = function () {
               var el = tagSidebar();
-              if (el !== null) syncRingFix(el);
+              if (el !== null) { syncRingFix(el); tagMain(el); }
             };
             window.addEventListener('resize', hostResize);
           }
           return side;
+        }
+
+        // The conversation column is the grid track between the sidebar and
+        // the right rail. Tag it so the sheet can round its four corners; the
+        // host keeps ownership of scroll, focus and the composer.
+        function tagMain(side) {
+          if (!side) return null;
+          var main = side.nextElementSibling;
+          if (!main && typeof document !== 'undefined' && typeof document.querySelector === 'function') {
+            var rail = document.querySelector('[data-rightbar-col]');
+            if (rail) main = rail.previousElementSibling;
+          }
+          if (!main || main === side || !main.classList) return null;
+          if (main.hasAttribute('data-shell-overlay') || main.hasAttribute('data-shell-bottom')) return null;
+          if (typeof main.getBoundingClientRect === 'function') {
+            var box = main.getBoundingClientRect();
+            if (!(box.width > 0)) return null;
+          }
+          if (!main.classList.contains(MAIN_CLASS)) main.classList.add(MAIN_CLASS);
+          return main;
         }
 
         // The host list keeps a scrollbar gutter on the right
@@ -1518,13 +1553,17 @@ window.__ModuleLoader__.load({
             if (on) document.body.dataset.aeGlass = 'on';
             else delete document.body.dataset.aeGlass;
             document.body.dataset.aeDepth = normaliseDepth(state.depth);
+            if (state.enabled) document.body.dataset.aeMain = 'on';
+            else delete document.body.dataset.aeMain;
           } catch (err) {
             /* body not mounted yet — the retry below picks it up */
           }
-          if (!on) return;
+          if (!state.enabled) return;
           tagRail();
           // the frame may mount a tick after the plugin boots — retry briefly
-          if (tagSidebar() === null) scheduleTag(0);
+          var side = tagSidebar();
+          if (side === null) scheduleTag(0);
+          else tagMain(side);
         }
 
         function scheduleTag(delay) {
@@ -1534,13 +1573,13 @@ window.__ModuleLoader__.load({
           var step = function () {
             hostTimer = null;
             try {
-              if (document.body.dataset.aeGlass !== 'on') return;
+              if (document.body.dataset.aeGlass !== 'on' && document.body.dataset.aeMain !== 'on') return;
             } catch (err) {
               return;
             }
             tagRail();
             var tagged = tagSidebar();
-            if (tagged !== null) syncRingFix(tagged);
+            if (tagged !== null) { syncRingFix(tagged); tagMain(tagged); }
             if (tagged === null && hostTries < 40) {
               hostTries += 1;
               hostTimer = window.setTimeout(step, 250);
@@ -1580,7 +1619,9 @@ window.__ModuleLoader__.load({
             for (var i = 0; i < tagged.length; i += 1) tagged[i].classList.remove(SIDEBAR_CLASS);
             var rails = document.querySelectorAll('.' + RAIL_CLASS);
             for (var j = 0; j < rails.length; j += 1) rails[j].classList.remove(RAIL_CLASS);
-            if (document.body) delete document.body.dataset.aeGlass;
+            var mains = document.querySelectorAll('.' + MAIN_CLASS);
+            for (var k = 0; k < mains.length; k += 1) mains[k].classList.remove(MAIN_CLASS);
+            if (document.body) { delete document.body.dataset.aeGlass; delete document.body.dataset.aeMain; }
           } catch (err) {
             /* ignore */
           }

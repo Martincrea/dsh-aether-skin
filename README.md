@@ -120,7 +120,9 @@
 - **性能**：3 个绘制层；只有 1 个 `opacity` 动画 + 1 个 `transform` 动画，都不触发重排/重绘；星点字段首次加载生成一次并缓存为 data URI；`prefers-reduced-motion` 下两个动画全部停用；设置页可整体关闭。
 - **交互**：`.ae-sky` 及三个子层全部 `pointer-events:none`，不拦截点击、不改布局、不参与滚动。
 
-### 3.2 玻璃立体平台（Glass platform）
+### 3.2 玻璃立体平台（Glass platform，可选）
+
+> **默认关闭（v1.8.0 起）**：左侧栏与右栏保持宿主原生的平面质感，不再浮起玻璃板；需要时在 `AETHER` 设置页打开「立体平台」，会同时启用玻璃面板、卡片绘制层与「立体强度」三档。关闭时所有 `.ae-sidebar` / 卡片规则都被 `body[data-ae-glass="on"]` 挡住，实际效果等于原生界面。
 
 目标：把左侧工作区从「贴边的列」变成**浮在界面之上的一块玻璃板**，面板比外框略小、四边留出呼吸；卡片有轻微厚度，悬停/选中时平滑抬起。全程只加视觉，不改结构、不改交互。
 
@@ -171,6 +173,16 @@
 强调色跟随主题轨道（冰蓝/薄荷/琥珀），切换时整组自动变色；悬停时工作区行的底色再加深一档，与对话行的中性悬停区分开。
 
 ---
+
+### 3.3 对话区圆角与留白（v1.8.0）
+
+宿主只给对话列（中间 track）圆了左上角（`border-radius: var(--dsh-windows-content-radius) 0 0 0`），其余三角是直角、且与两侧栏同色，读起来像一块铺满的矩形。v1.8.0 用一个运行时标记补上这一层：
+
+- `syncHost()` 找到侧栏列后取它的 `nextElementSibling`（即对话列），加 `.ae-main`，并发布 `body[data-ae-main="on"]`；右栏重挂载时由 `MutationObserver` 与 `resize` 重打。
+- 样式只动这一列：`border-radius: clamp(13px,1.5vw,19px)`（四角同值）+ 四边 `margin: clamp(4px,.55vw,7px) clamp(5px,.7vw,9px)`，外加 1px 发丝环与一抹向下的柔和投影，让圆角在深/浅两套底色上都能被看见。
+- 不改网格轨道：列宽由宿主 `grid-template-columns` 决定，margin 只是把**绘制面**从贴边收进来，因此右栏位置、拖拽手柄、滚动条都保持原位；这也是「对话框右边恢复正常」的做法——右侧不再被玻璃内缩挤压，而是回到宿主自己的间距，再叠加统一的 5–9px 呼吸位。
+- 圆角与投影是纯绘制层，`overflow:hidden` 由宿主本来就有，所以消息内容不会被裁出新边。
+
 
 ## 4. 版式与组件
 
@@ -294,6 +306,7 @@ dsh-aether-skin/
 - ✅ 离线冒烟测试（stub 了 `window.__ModuleLoader__` / `document` / React / ctx）：124 个令牌均为合法 `{light,dark}` 字符串对；`overrideTokens` 只调用一次并带上 source；CSS 花括号配平、无宿主 hash class；两个槽注册参数正确（`settings.section` id=`aether-skin`、order=55；`shell.overlay` id=`aether-atmosphere`、order=900）。
 - ✅ 星河测试（v1.5.0 深空版）：3 个星点字段独立解码校验——远景 420 颗、银河带 260 颗、前景 18 颗（viewBox 2400×1600、无 NaN、不含 `<g>`/`<polygon>` 航天器图元、远景与银河带最大半径 ≤2、前景 ≤3.4 即**不存在光晕圆盘**、六档色温齐全）；CSS 断言含 `--ae-near`、`@keyframes ae-float`、浅色 `multiply` 覆盖、`reduced-motion` 同时停掉闪烁与漂移，且**不含** `filter:blur(.6px)`；`.ae-sky` 仅在 `galaxy` 开启时渲染，浓度档位映射 0.80/1.05/1.42、未知档位回落 0.80，`pointer-events:none` 全程保持。
 - ✅ 层级区分（v1.5.0）：CSS 断言存在 `[data-row-key^="workspace:"]` 的强调色表面、`--ae-ws-plaque` 玻璃小牌与 13px 文件夹图标发光规则，以及 `[data-row-key^="overflow:"]` 的中性兜底；工作区与对话的标题左边界、行高、缩进均未改动。
+- ✅ 对话区圆角（v1.8.0）：断言 `.ae-main` 规则存在、`border-radius:clamp(13px,1.5vw,19px)`、默认 `body[data-ae-glass]` 不设置（平面为默认）、`body[data-ae-main="on"]` 默认发布、`enabled:false` 时两条属性都清除。
 - ✅ 立体强度（v1.7.0）：断言三档预设选择器存在、`--ae-plat-depth:1`（标准档标记）、强烈档悬停位移 `translateY(-3.4px) scale(1.012)`、中英文案键 `depth*` 齐全；stub 侧断言首次挂载即发布 `body[data-ae-depth]`，缺省值落到 `strong`。
 - ✅ 自适应留白（v1.6.4）：断言卡片面右内缩引用 `--ae-ring-right-fix`（`calc(var(--ae-card-inset,4px) - var(--ae-ring-right-fix,0px))`）、存在 `syncRingFix()` 测量函数、两个主题各自声明 `--ae-card-inset:4px`。
 - ✅ 声明完整性（v1.6.3）：断言 `--ae-plat-bg` 声明里不再混入其他自定义属性（正则 `/--ae-plat-bg:[^;]*--ae-plat-gap/` 必须不匹配），且 `--ae-plat-gap` 在深/浅两套变量里各恰好出现一次。
