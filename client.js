@@ -23,7 +23,7 @@ window.__ModuleLoader__.load({
 
     var SOURCE = '@local/dsh-aether-skin';
     var STORAGE_KEY = 'dsh-aether-skin.v1';
-    var VERSION = '1.6.4';
+    var VERSION = '1.7.0';
 
     // ══════════════════════════════════════════════════════════════════════
     // 1. Palette — every value is a [light, dark] pair.
@@ -293,6 +293,11 @@ window.__ModuleLoader__.load({
         levelRich: '浓郁',
         glass: '立体平台',
         glassDesc: '左右工作区都浮起为玻璃面板：内缩留白、背景模糊、发丝高光；左侧卡片悬停或选中时明显上浮。',
+        depth: '立体强度',
+        depthDesc: '面板厚度、边缘高光与卡片投影的力度；只改光影，不改布局与位置。',
+        depthSoft: '柔和',
+        depthNormal: '标准',
+        depthStrong: '强烈',
         components: '组件预览',
         componentsDesc: '按钮、输入、状态——同一套令牌，浅深两套自动跟随。',
         palette: '令牌色板',
@@ -330,6 +335,11 @@ window.__ModuleLoader__.load({
         levelRich: 'Rich',
         glass: 'Glass platform',
         glassDesc: 'Lifts both workspaces onto glass panels — inset margins, backdrop blur, hairline highlights; cards rise further on hover and selection.',
+        depth: 'Depth',
+        depthDesc: 'How thick the plates read: rim light, plate shadow and card elevation. Light and shadow only — layout never moves.',
+        depthSoft: 'Soft',
+        depthNormal: 'Normal',
+        depthStrong: 'Strong',
         components: 'Component preview',
         componentsDesc: 'Buttons, input, status — one token set, both schemes follow automatically.',
         palette: 'Token palette',
@@ -374,8 +384,12 @@ window.__ModuleLoader__.load({
     // ══════════════════════════════════════════════════════════════════════
     // Star river intensity → opacity multiplier applied by the stylesheet.
     var LEVELS = { subtle: 0.8, medium: 1.05, rich: 1.42 };
-    var DEFAULTS = { enabled: true, accent: 'ice', veil: true, galaxy: true, galaxyLevel: 'subtle', glass: true };
+    var DEPTHS = { soft: 1, normal: 1, strong: 1 };
+    var DEFAULTS = { enabled: true, accent: 'ice', veil: true, galaxy: true, galaxyLevel: 'subtle', glass: true, depth: 'strong' };
 
+    function normaliseDepth(value) {
+      return typeof value === 'string' && Object.prototype.hasOwnProperty.call(DEPTHS, value) ? value : DEFAULTS.depth;
+    }
     function normaliseLevel(value) {
       return typeof value === 'string' && Object.prototype.hasOwnProperty.call(LEVELS, value) ? value : DEFAULTS.galaxyLevel;
     }
@@ -390,6 +404,7 @@ window.__ModuleLoader__.load({
         galaxy: DEFAULTS.galaxy,
         galaxyLevel: DEFAULTS.galaxyLevel,
         glass: DEFAULTS.glass,
+        depth: DEFAULTS.depth,
       };
       try {
         var raw = window.localStorage.getItem(STORAGE_KEY);
@@ -400,6 +415,7 @@ window.__ModuleLoader__.load({
             if (typeof parsed.veil === 'boolean') next.veil = parsed.veil;
             if (typeof parsed.galaxy === 'boolean') next.galaxy = parsed.galaxy;
             if (typeof parsed.glass === 'boolean') next.glass = parsed.glass;
+            next.depth = normaliseDepth(parsed.depth);
             if (typeof parsed.accent === 'string' && ACCENTS[parsed.accent]) next.accent = parsed.accent;
             next.galaxyLevel = normaliseLevel(parsed.galaxyLevel);
           }
@@ -424,11 +440,13 @@ window.__ModuleLoader__.load({
         galaxy: current.galaxy,
         galaxyLevel: current.galaxyLevel,
         glass: current.glass,
+        depth: current.depth,
       };
       if (typeof patch.enabled === 'boolean') next.enabled = patch.enabled;
       if (typeof patch.veil === 'boolean') next.veil = patch.veil;
       if (typeof patch.galaxy === 'boolean') next.galaxy = patch.galaxy;
       if (typeof patch.glass === 'boolean') next.glass = patch.glass;
+      if (typeof patch.depth === 'string') next.depth = normaliseDepth(patch.depth);
       if (typeof patch.galaxyLevel === 'string') next.galaxyLevel = normaliseLevel(patch.galaxyLevel);
       if (typeof patch.accent === 'string' && ACCENTS[patch.accent]) next.accent = patch.accent;
       store = next;
@@ -459,6 +477,7 @@ window.__ModuleLoader__.load({
             galaxy: next.galaxy,
             galaxyLevel: next.galaxyLevel,
             glass: next.glass,
+            depth: next.depth,
           });
         };
         listeners.push(fn);
@@ -897,6 +916,36 @@ window.__ModuleLoader__.load({
       'body[data-ae-glass="on"] .ae-rail [data-dockkit-pane],',
       'body[data-ae-glass="on"] .ae-rail [data-dockkit-empty]{background:transparent !important;}',
 
+      /* ── depth presets ──────────────────────────────────────────────
+         Depth is a light layer, not a layout: it only re-tunes rim light,
+         plate shadow and card elevation, so switching it can never move a
+         control or re-flow the list. */
+      'body[data-ae-glass="on"]{--ae-plat-depth:0;}',
+      'body[data-ae-glass="on"][data-ae-depth="soft"]{',
+      '--ae-plat-ring:rgba(255,255,255,.09);--ae-plat-hi:rgba(255,255,255,.07);',
+      '--ae-plat-shadow:0 22px 44px -26px rgba(0,0,0,.7),0 8px 18px -12px rgba(0,0,0,.5);',
+      '--ae-card-shadow:0 6px 14px -12px rgba(0,0,0,.7);}',
+      'body[data-ae-glass="on"][data-ae-depth="normal"]{--ae-plat-depth:1;}',
+      'body[data-ae-glass="on"][data-ae-depth="strong"]{',
+      '--ae-plat-ring:rgba(255,255,255,.23);--ae-plat-hi:rgba(255,255,255,.2);',
+      '--ae-plat-edge:inset 0 -1px 0 rgba(0,0,0,.55),inset 0 -14px 24px -18px rgba(0,0,0,.5);',
+      '--ae-plat-shadow:0 54px 104px -32px rgba(0,0,0,.98),0 24px 48px -20px rgba(0,0,0,.86),0 8px 16px -4px rgba(0,0,0,.7);',
+      '--ae-card-ring:rgba(255,255,255,.13);--ae-card-hi:inset 0 1px 0 rgba(255,255,255,.14);',
+      '--ae-card-shadow:0 22px 40px -20px rgba(0,0,0,.98),0 6px 12px -8px rgba(0,0,0,.66);}',
+      'body[data-ae-glass="on"]:not([data-ds-dark-theme])[data-ae-depth="soft"]{',
+      '--ae-plat-ring:rgba(15,23,42,.12);--ae-plat-shadow:0 18px 36px -24px rgba(15,23,42,.28),0 6px 14px -10px rgba(15,23,42,.14);',
+      '--ae-card-shadow:0 5px 12px -10px rgba(15,23,42,.3);}',
+      'body[data-ae-glass="on"]:not([data-ds-dark-theme])[data-ae-depth="strong"]{',
+      '--ae-plat-ring:rgba(15,23,42,.26);--ae-plat-hi:rgba(255,255,255,.99);',
+      '--ae-plat-edge:inset 0 -1px 0 rgba(15,23,42,.14),inset 0 -12px 22px -18px rgba(15,23,42,.16);',
+      '--ae-plat-shadow:0 50px 92px -32px rgba(15,23,42,.5),0 18px 38px -18px rgba(15,23,42,.3),0 4px 10px -2px rgba(15,23,42,.16);',
+      '--ae-card-ring:rgba(15,23,42,.15);--ae-card-hi:inset 0 1px 0 #fff;',
+      '--ae-card-shadow:0 20px 34px -18px rgba(15,23,42,.44),0 5px 10px -6px rgba(15,23,42,.2);}',
+      '@media (hover:hover){body[data-ae-glass="on"][data-ae-depth="strong"] .ae-sidebar [data-row-key]:not([aria-selected="true"]):hover:before{',
+      'transform:translateY(-3.4px) scale(1.012);}',
+      'body[data-ae-glass="on"][data-ae-depth="strong"] .ae-sidebar [data-row-key][aria-selected="true"]:hover:before{',
+      'transform:translateY(-3.6px) scale(1.012);}}',
+
       /* ── motion budget: honour the system setting ────────────────── */
       '@media (prefers-reduced-motion:reduce){.ae-switch,.ae-knob,.ae-segbtn,.ae-btn,.ae-input{transition:none;}',
       'body[data-ae-glass="on"] .ae-sidebar [data-row-key]:before{transition:none;}',
@@ -1064,6 +1113,29 @@ window.__ModuleLoader__.load({
       );
     }
 
+    function DepthPicker(props) {
+      var keys = ['soft', 'normal', 'strong'];
+      return h(
+        'div',
+        { className: 'ae-seg', role: 'group', 'aria-label': tr('depth') },
+        keys.map(function (key) {
+          return h(
+            'button',
+            {
+              key: key,
+              type: 'button',
+              className: 'ae-segbtn',
+              'aria-pressed': props.value === key ? 'true' : 'false',
+              onClick: function () {
+                if (props.value !== key) props.onChange(key);
+              },
+            },
+            tr('depth' + key.charAt(0).toUpperCase() + key.slice(1)),
+          );
+        }),
+      );
+    }
+
     function Section() {
       var state = useStore();
       var bump = React.useState(0)[1];
@@ -1210,6 +1282,22 @@ window.__ModuleLoader__.load({
               },
             }),
           ),
+          h(
+            'div',
+            { className: 'ae-row' },
+            h(
+              'div',
+              { className: 'ae-rowmain' },
+              h('div', { className: 'ae-title' }, tr('depth')),
+              h('div', { className: 'ae-desc' }, tr('depthDesc')),
+            ),
+            h(DepthPicker, {
+              value: state.depth,
+              onChange: function (key) {
+                writeStore({ depth: key });
+              },
+            }),
+          ),
         ),
         h(
           'div',
@@ -1249,6 +1337,7 @@ window.__ModuleLoader__.load({
                   galaxy: DEFAULTS.galaxy,
                   galaxyLevel: DEFAULTS.galaxyLevel,
                   glass: DEFAULTS.glass,
+                  depth: DEFAULTS.depth,
                 });
               },
             },
@@ -1428,6 +1517,7 @@ window.__ModuleLoader__.load({
           try {
             if (on) document.body.dataset.aeGlass = 'on';
             else delete document.body.dataset.aeGlass;
+            document.body.dataset.aeDepth = normaliseDepth(state.depth);
           } catch (err) {
             /* body not mounted yet — the retry below picks it up */
           }
