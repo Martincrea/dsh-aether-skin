@@ -886,7 +886,7 @@ window.__ModuleLoader__.load({
       'body[data-ae-glass="on"] .ae-rail [data-sidebar-right-panel]:not([data-sidebar-right-panel="fullscreen"]){',
       'top:var(--ae-plat-gap) !important;bottom:var(--ae-plat-gap) !important;',
       'right:var(--ae-plat-gap) !important;left:auto !important;',
-      'width:calc(100% - var(--ae-plat-gap) * 2) !important;',
+      'width:max(0px, calc(100% - var(--ae-plat-gap) * 2)) !important;',
       'border-radius:clamp(13px,4%,17px) !important;overflow:hidden !important;',
       'background:var(--ae-plat-bg) !important;',
       'box-shadow:0 0 0 1px var(--ae-plat-ring),var(--ae-plat-shadow),inset 0 1px 0 var(--ae-plat-hi),var(--ae-plat-edge);',

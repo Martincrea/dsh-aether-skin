@@ -131,7 +131,7 @@
 | 卡片 `[data-row-key]::before` | 卡片面画在行内的 `::before` 上（`inset:1px 4px`、`border-radius:12px`、`z-index:-1`），行本身不再有 margin / 背景 / 圆角——因此左右内缩天然对称，且完全不参与宿主排版 | `bg-layer-2` 46% 半透明底 | `rgba(255,255,255,.66)` 底 |
 | 悬停 | 卡片层 `translateY(-2px) scale(1.008)`（`inset` 留出的 4px 正好容纳放大量，不会被滚动区裁切）、底色提亮、投影加深 | 环提到 17% 白 | 环提到 15% 墨 |
 | 选中 | **反相表面**：深色模式下卡片变成近白（`#EDF1F7`）配深墨文字（`#0A0E14`），浅色模式下变成近黑（`#12171F`）配亮字（`#F5F8FC`）；行内所有子孙 `color:inherit`，图标 `opacity:.9` | 近白 + 深墨 + 55% 白内高光 | 近黑 + 亮字 + 16% 白内高光 |
-| 右栏玻璃板 `[data-rightbar-col] [data-sidebar-right-panel]` | 右栏是「轨道不是盒子」：面板绝对定位（`right:0`），**加 padding 推不动它**，所以直接给面板本身设 `top/bottom/right:var(--ae-plat-gap)` + `width:calc(100% - var(--ae-plat-gap) * 2)`（四边等距）+ 圆角 + 同一套玻璃材质；`fullscreen` 形态除外，保持贴边 | 同左栏玻璃材质 | 同左栏玻璃材质 |
+| 右栏玻璃板 `[data-rightbar-col] [data-sidebar-right-panel]` | 右栏是「轨道不是盒子」：面板绝对定位（`right:0`），**加 padding 推不动它**，所以直接给面板本身设 `top/bottom/right:var(--ae-plat-gap)` + `width:max(0px, calc(100% - var(--ae-plat-gap) * 2))`（四边等距，列宽归零时也不会溢出）+ 圆角 + 同一套玻璃材质；`fullscreen` 形态除外，保持贴边 | 同左栏玻璃材质 | 同左栏玻璃材质 |
 | 右栏内容面 | `[data-dockkit-host=dock] / [data-dockkit-pane] / [data-dockkit-empty]` 背景透明，让玻璃板成为唯一表面 | — | — |
 | 过渡 | `transform / box-shadow / background-color` 统一 `220ms cubic-bezier(.16,1,.3,1)` | — | — |
 
@@ -291,7 +291,7 @@ dsh-aether-skin/
 - ✅ 离线冒烟测试（stub 了 `window.__ModuleLoader__` / `document` / React / ctx）：124 个令牌均为合法 `{light,dark}` 字符串对；`overrideTokens` 只调用一次并带上 source；CSS 花括号配平、无宿主 hash class；两个槽注册参数正确（`settings.section` id=`aether-skin`、order=55；`shell.overlay` id=`aether-atmosphere`、order=900）。
 - ✅ 星河测试（v1.5.0 深空版）：3 个星点字段独立解码校验——远景 420 颗、银河带 260 颗、前景 18 颗（viewBox 2400×1600、无 NaN、不含 `<g>`/`<polygon>` 航天器图元、远景与银河带最大半径 ≤2、前景 ≤3.4 即**不存在光晕圆盘**、六档色温齐全）；CSS 断言含 `--ae-near`、`@keyframes ae-float`、浅色 `multiply` 覆盖、`reduced-motion` 同时停掉闪烁与漂移，且**不含** `filter:blur(.6px)`；`.ae-sky` 仅在 `galaxy` 开启时渲染，浓度档位映射 0.80/1.05/1.42、未知档位回落 0.80，`pointer-events:none` 全程保持。
 - ✅ 层级区分（v1.5.0）：CSS 断言存在 `[data-row-key^="workspace:"]` 的强调色表面、`--ae-ws-plaque` 玻璃小牌与 13px 文件夹图标发光规则，以及 `[data-row-key^="overflow:"]` 的中性兜底；工作区与对话的标题左边界、行高、缩进均未改动。
-- ✅ 统一留白（v1.6.2）：断言存在 `--ae-plat-gap:clamp(6px,1.6%,10px)`、左列 `margin:var(--ae-plat-gap) !important`、玻璃面 `inset:0`、右栏 `width:calc(100% - var(--ae-plat-gap) * 2)`。
+- ✅ 统一留白（v1.6.2）：断言存在 `--ae-plat-gap:clamp(6px,1.6%,10px)`、左列 `margin:var(--ae-plat-gap) !important`、玻璃面 `inset:0`、右栏 `width:max(0px, calc(100% - var(--ae-plat-gap) * 2))`。
 - ✅ 卡片绘制层（v1.6.2）：CSS 断言卡片面为行内 `::before`（`inset:1px 4px;border-radius:12px`），行盒子 `margin-inline:0 !important` 且无背景/投影；断言悬停选择器带 `:not([aria-selected="true"])`，防止「选中 + 悬停」再次把文字压成不可读。
 - ✅ 图标对齐（v1.6.1）：CSS 断言行卡片为 `margin-block:2px;margin-inline:0`，且不再出现 `margin:2px 4px` 与旧规则 `margin-inline-end:clamp(6px,1.6%,8px)`；折叠态为 `padding:18px 10px 6px`；文件夹小牌为 `width:18px;height:18px;margin-inline:-1px`；行首槽位统一为 flex 居中；悬停为 `translateY(-2.5px)` 且不再出现 `scale(1.012)`（避免被宿主滚动区裁切）。
 - ✅ 布局回归（v1.2.1）：CSS 断言 `.ae-sidebar` 只用 `padding:clamp(...)` 内缩、不再出现 `margin:10px 9px 12px`，玻璃面来自 `::before`（`z-index:-1`、`pointer-events:none`），折叠态 `[data-sidebar-collapsed]>.ae-sidebar` 有独立内缩；`findSidebar()` 增加三道防线（必须找到含 `[data-shell-bottom]` 的真 AppFrame、优先取包住 `[role=tree]/[data-row-key]` 的列、列宽不得超过 frame 宽度的 60%），避免把整壳容器误标成侧栏。
