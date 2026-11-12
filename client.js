@@ -23,7 +23,7 @@ window.__ModuleLoader__.load({
 
     var SOURCE = '@local/dsh-aether-skin';
     var STORAGE_KEY = 'dsh-aether-skin.v1';
-    var VERSION = '1.9.0';
+    var VERSION = '1.10.0';
 
     // ══════════════════════════════════════════════════════════════════════
     // 1. Palette — every value is a [light, dark] pair.
@@ -958,19 +958,43 @@ window.__ModuleLoader__.load({
       'body[data-ae-rows="on"][data-ae-depth="strong"] .ae-sidebar [data-row-key][aria-selected="true"]:hover:before{',
       'transform:translateY(-3.6px) scale(1.012);}}',
 
-      /* ── conversation surface ───────────────────────────────────────
-         The host only rounds the top-left corner of this track; round all
-         four and give the sheet a little breathing room, so the conversation
-         reads as one calm surface instead of a full-bleed rectangle. Nothing
-         inside moves: the column keeps its track, the host keeps scroll and
-         the composer. */
+      /* ── conversation surface: a light reading sheet ───────────────
+         The conversation is the one place the eye stays for a long time, so
+         it becomes a paper-white sheet: the four corners finally read against
+         the deep background, and inside the sheet every semantic token is
+         re-pointed at the light palette so text, borders, hovers, code blocks
+         and the composer all stay legible. Only variables are remapped — no
+         component inside is restyled or moved. */
       'body[data-ae-main="on"] .ae-main{',
-      'border-radius:clamp(13px,1.5vw,19px) !important;overflow:hidden !important;',
-      'margin:clamp(4px,.55vw,7px) clamp(5px,.7vw,9px) clamp(4px,.55vw,7px) clamp(5px,.7vw,9px) !important;',
-      'box-shadow:0 0 0 1px var(--dsw-alias-border-l1),0 22px 48px -30px rgba(0,0,0,.72);',
-      'background-clip:padding-box !important;}',
+      'border-radius:clamp(18px,2vw,26px) !important;overflow:hidden !important;',
+      'margin:clamp(6px,.8vw,10px) clamp(7px,1vw,12px) !important;',
+      'background:var(--ae-main-bg) !important;',
+      'box-shadow:0 0 0 1px var(--ae-main-ring),0 30px 60px -34px rgba(0,0,0,.85) !important;',
+      '--ae-main-bg:#FFFFFF;--ae-main-ring:rgba(255,255,255,.25);}',
       'body[data-ae-main="on"]:not([data-ds-dark-theme]) .ae-main{',
-      'box-shadow:0 0 0 1px var(--dsw-alias-border-l2),0 20px 42px -30px rgba(15,23,42,.3);}',
+      '--ae-main-ring:rgba(15,23,42,.14);}',
+      /* dark shell ⇒ light island: the sheet owns its own palette */
+      'body[data-ae-main="on"][data-ds-dark-theme] .ae-main{',
+      '--dsw-alias-bg-base:#FFFFFF;--dsw-alias-bg-layer-1:#FFFFFF;',
+      '--dsw-alias-bg-layer-2:#F7F8FB;--dsw-alias-bg-layer-3:#F1F3F7;--dsw-alias-bg-layer-4:#E9EDF3;',
+      '--dsw-alias-bg-overlay:rgba(255,255,255,.94);--dsw-alias-bg-skeleton:rgba(15,23,42,.06);',
+      '--dsw-alias-border-l1:rgba(15,23,42,.08);--dsw-alias-border-l2:rgba(15,23,42,.12);',
+      '--dsw-alias-border-l3:rgba(15,23,42,.16);--dsw-alias-border-l4:rgba(15,23,42,.22);',
+      '--dsw-alias-label-primary:#0B1016;--dsw-alias-label-primary-dimmed:#151A22;',
+      '--dsw-alias-label-secondary:#55606F;--dsw-alias-label-tertiary:#78838F;',
+      '--dsw-alias-label-caption:#8A93A1;--dsw-alias-label-primary-foreground:#FFFFFF;',
+      '--dsw-alias-label-dimmed:#E4E8EE;--dsw-alias-interactive-bg-hover:rgba(15,23,42,.06);',
+      '--dsw-alias-interactive-bg-active:rgba(15,23,42,.1);',
+      '--dsw-alias-interactive-bg-hover-accent:rgba(15,23,42,.1);',
+      '--dsw-alias-interactive-bg-hover-solid:#F1F3F7;',
+      '--dsw-specific-input-major:#FFFFFF;--dsw-specific-bubble:#EFF4FD;',
+      '--dsw-specific-tip:#F4F6F9;--dsw-specific-selector:#F1F3F7;',
+      '--dsw-alias-markdown-code-block:#F6F8FB;--dsw-alias-markdown-code-block-banner:#EEF1F6;',
+      '--dsw-alias-markdown-inline-code:#F0F3F8;--dsw-alias-markdown-tag:#EDF1F7;',
+      '--dsw-alias-scrollbar-bg-l1:#E3E7ED;--dsw-alias-scrollbar-bg-l2:#D9DFE7;',
+      '--dsw-alias-scrollbar-hover-l1:#CBD2DC;--dsw-alias-scrollbar-hover-l2:#BFC7D3;',
+      '--dsw-alias-switch-thumb:#FFFFFF;--dsw-alias-state-idle-primary:#C9D0DA;',
+      '--dsw-alias-turn-trigger-bg:#F3F5F9;--dsw-alias-turn-trigger-bg-hover:#EAEEF5;}',
       /* ── motion budget: honour the system setting ────────────────── */
       '@media (prefers-reduced-motion:reduce){.ae-switch,.ae-knob,.ae-segbtn,.ae-btn,.ae-input{transition:none;}',
       'body[data-ae-rows="on"] .ae-sidebar [data-row-key]:before{transition:none;}',
