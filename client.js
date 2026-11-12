@@ -23,7 +23,7 @@ window.__ModuleLoader__.load({
 
     var SOURCE = '@local/dsh-aether-skin';
     var STORAGE_KEY = 'dsh-aether-skin.v1';
-    var VERSION = '1.6.2';
+    var VERSION = '1.6.3';
 
     // ══════════════════════════════════════════════════════════════════════
     // 1. Palette — every value is a [light, dark] pair.
@@ -746,8 +746,8 @@ window.__ModuleLoader__.load({
       /* ── glass platform — the left workspace floats on its own sheet ─ */
       'body[data-ae-glass="on"]{',
       '--ae-plat-bg:linear-gradient(168deg,rgba(255,255,255,.055),rgba(255,255,255,.014) 34%,rgba(255,255,255,0) 64%),',
-      '--ae-plat-gap:clamp(6px,1.6%,10px);',
       'color-mix(in srgb,var(--dsw-specific-sidebar-fill) 80%,transparent);',
+      '--ae-plat-gap:clamp(6px,1.6%,10px);',
       '--ae-plat-ring:rgba(255,255,255,.13);--ae-plat-hi:rgba(255,255,255,.11);',
       '--ae-plat-edge:inset 0 -1px 0 rgba(0,0,0,.38);',
       '--ae-plat-shadow:0 38px 74px -28px rgba(0,0,0,.88),0 14px 30px -14px rgba(0,0,0,.66),0 3px 8px -2px rgba(0,0,0,.52);',
@@ -773,8 +773,8 @@ window.__ModuleLoader__.load({
       '--ae-ws-glow:drop-shadow(0 0 5px color-mix(in srgb,var(--dsw-alias-state-business-primary) 55%,transparent));}',
       'body[data-ae-glass="on"]:not([data-ds-dark-theme]){',
       '--ae-plat-bg:linear-gradient(168deg,rgba(255,255,255,.78),rgba(255,255,255,.5) 38%,rgba(255,255,255,.34) 70%,rgba(255,255,255,.44)),',
-      '--ae-plat-gap:clamp(6px,1.6%,10px);',
       'color-mix(in srgb,var(--dsw-specific-sidebar-fill) 72%,transparent);',
+      '--ae-plat-gap:clamp(6px,1.6%,10px);',
       '--ae-plat-ring:rgba(15,23,42,.15);--ae-plat-hi:rgba(255,255,255,.95);',
       '--ae-plat-edge:inset 0 -1px 0 rgba(15,23,42,.07);',
       '--ae-plat-shadow:0 32px 62px -28px rgba(15,23,42,.36),0 10px 22px -14px rgba(15,23,42,.16),0 2px 5px -1px rgba(15,23,42,.10);',
