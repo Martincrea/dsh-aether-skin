@@ -23,7 +23,7 @@ window.__ModuleLoader__.load({
 
     var SOURCE = '@local/dsh-aether-skin';
     var STORAGE_KEY = 'dsh-aether-skin.v1';
-    var VERSION = '1.9.1';
+    var VERSION = '1.9.2';
 
     // ══════════════════════════════════════════════════════════════════════
     // 1. Palette — every value is a [light, dark] pair.
@@ -854,10 +854,16 @@ window.__ModuleLoader__.load({
       'box-shadow:0 0 0 1px var(--ae-card-ring),var(--ae-card-hi),var(--ae-card-shadow);',
       'transition:transform 220ms cubic-bezier(.16,1,.3,1),box-shadow 220ms cubic-bezier(.16,1,.3,1),',
       'background-color 220ms ease-out;}',
-      'body[data-ae-rows="on"] .ae-sidebar [data-row-key][aria-selected="true"]{color:var(--ae-card-sel-ink-fg);}',
-      'body[data-ae-rows="on"] .ae-sidebar [data-row-key][aria-selected="true"]:before{',
-      'border-radius:16px;background:var(--ae-card-sel-ink);',
-      'box-shadow:var(--ae-card-sel-ink-hi),var(--ae-card-sel-ink-shadow);}',
+      /* Selected rows paint on the row box itself: the paint layer above can
+         be drowned by the host's own selected background, and a row box is the
+         one surface we know always renders. Its 3px transparent inline border
+         plus background-clip:padding-box keeps the white card inset from the
+         glass edge, and border-radius turns the frame round. */
+      'body[data-ae-rows="on"] .ae-sidebar [data-row-key][aria-selected="true"]{',
+      'background-color:var(--ae-card-sel-ink) !important;background-clip:padding-box !important;',
+      'border-radius:16px !important;color:var(--ae-card-sel-ink-fg) !important;',
+      'box-shadow:var(--ae-card-sel-ink-hi),var(--ae-card-sel-ink-shadow) !important;}',
+      'body[data-ae-rows="on"] .ae-sidebar [data-row-key][aria-selected="true"]:before{display:none !important;}',
       'body[data-ae-rows="on"] .ae-sidebar [data-row-key][aria-selected="true"] :where(*){',
       'color:inherit !important;}',
       'body[data-ae-rows="on"] .ae-sidebar [data-row-key][aria-selected="true"] :where(svg){opacity:.9;}',
@@ -871,8 +877,9 @@ window.__ModuleLoader__.load({
       'body[data-ae-rows="on"] .ae-sidebar [data-row-key^="workspace:"]:not([aria-selected="true"]):hover:before{',
       'background:var(--ae-ws-bg-hover);box-shadow:0 0 0 1px var(--ae-ws-ring),inset 0 1px 0 rgba(255,255,255,.12),',
       '0 20px 34px -18px rgba(0,0,0,.9);}}',
-      'body[data-ae-rows="on"] .ae-sidebar [data-row-key][aria-selected="true"]:hover:before{',
-      'transform:translateY(-2.5px) scale(1.008);}',
+      'body[data-ae-rows="on"] .ae-sidebar [data-row-key][aria-selected="true"]:hover{',
+      'box-shadow:var(--ae-card-sel-ink-hi),0 0 0 1px rgba(255,255,255,.42),',
+      '0 18px 34px -16px rgba(0,0,0,.8) !important;}',
       /* ── workspace vs conversation: containers lead, leaves follow ─── */
       'body[data-ae-rows="on"] .ae-sidebar [data-row-key^="workspace:"]:before{',
       'border-radius:14px;background:var(--ae-ws-bg);',
