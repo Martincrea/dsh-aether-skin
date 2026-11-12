@@ -23,7 +23,7 @@ window.__ModuleLoader__.load({
 
     var SOURCE = '@local/dsh-aether-skin';
     var STORAGE_KEY = 'dsh-aether-skin.v1';
-    var VERSION = '1.6.0';
+    var VERSION = '1.6.1';
 
     // ══════════════════════════════════════════════════════════════════════
     // 1. Palette — every value is a [light, dark] pair.
@@ -808,10 +808,21 @@ window.__ModuleLoader__.load({
       'backdrop-filter:blur(26px) saturate(140%);-webkit-backdrop-filter:blur(26px) saturate(140%);',
       'pointer-events:none;}',
       'body[data-ae-glass="on"] .ae-sidebar>*{background:transparent !important;}',
-      'body[data-ae-glass="on"] [data-sidebar-collapsed]>.ae-sidebar{padding:5px 3px !important;}',
+      /* Keep the host's own collapsed padding (18px 10px 6px): the 36px rail
+         buttons are positioned against it, so shrinking it moved every icon in
+         the rail off its original grid. Only the glass layer is inset. */
+      'body[data-ae-glass="on"] [data-sidebar-collapsed]>.ae-sidebar{padding:18px 10px 6px !important;}',
       'body[data-ae-glass="on"] [data-sidebar-collapsed]>.ae-sidebar:before{inset:2px 2px 6px;border-radius:12px;}',
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key]{position:relative;margin:2px 4px;',
-      'border-radius:12px;background:var(--ae-card-bg);background-clip:padding-box;',
+      /* Icon grid: the host lays icon + label out from the row's padded edge.
+         Adding inline margins here would shift each row's icon column 4px to
+         the right of every fixed control above it (toolbar toggle, new-session
+         button, footer actions), so rows keep zero inline margin and only gain
+         vertical breathing room. The gutter comes from the column padding. */
+      'body[data-ae-glass="on"] .ae-sidebar [data-row-key]{position:relative;margin-block:2px;margin-inline:0;',
+      /* border-box, not the host's padding-box: the row keeps its 3px
+         transparent paint-inset border, and clipping the fill inside it would
+         leave a 3px gap between the fill and the 1px ring drawn on the box. */
+      'border-radius:12px;background:var(--ae-card-bg);background-clip:border-box;',
       'box-shadow:0 0 0 1px var(--ae-card-ring),var(--ae-card-hi),var(--ae-card-shadow);',
       'transition:transform 220ms cubic-bezier(.16,1,.3,1),box-shadow 220ms cubic-bezier(.16,1,.3,1),',
       'background-color 220ms ease-out;}',
@@ -821,17 +832,26 @@ window.__ModuleLoader__.load({
       'body[data-ae-glass="on"] .ae-sidebar [data-row-key][aria-selected="true"] :where(*){',
       'color:inherit !important;}',
       'body[data-ae-glass="on"] .ae-sidebar [data-row-key][aria-selected="true"] :where(svg){opacity:.9;}',
+      /* The host scroll area clips on the x axis (overflow:hidden auto) and the
+         row now spans the full track, so a horizontal scale would be shaved off
+         at both rounded edges. Depth therefore comes from the lift + ring +
+         shadow only; the icon column never leaves the host grid. */
       '@media (hover:hover){body[data-ae-glass="on"] .ae-sidebar [data-row-key]:hover{',
-      'transform:translateY(-2.5px) scale(1.012);background:var(--ae-card-hover-bg);',
+      'transform:translateY(-2.5px);background:var(--ae-card-hover-bg);',
       'box-shadow:0 0 0 1px var(--ae-card-hover-ring),var(--ae-card-hi),var(--ae-card-hover-shadow);}}',
       'body[data-ae-glass="on"] .ae-sidebar [data-row-key][aria-selected="true"]:hover{',
-      'transform:translateY(-3px) scale(1.012);}',
+      'transform:translateY(-3px);}',
       /* ── workspace vs conversation: containers lead, leaves follow ─── */
       'body[data-ae-glass="on"] .ae-sidebar [data-row-key^="workspace:"]{',
       'background:var(--ae-ws-bg);',
       'box-shadow:0 0 0 1px var(--ae-ws-ring),var(--ae-card-hi),var(--ae-card-shadow);}',
+      /* The folder slot is 16px wide in the host grid. The plaque is drawn at
+         18px but the slot keeps its original 16px advance (negative inline
+         margins on both sides), so the icon centre and the label start of a
+         workspace row stay exactly on the same column as a session row. */
       'body[data-ae-glass="on"] .ae-sidebar [data-row-key^="workspace:"] > span:first-child{',
-      'width:18px;height:18px;margin-inline-start:-1px;border-radius:6px;',
+      'width:18px;height:18px;margin-inline:-1px;border-radius:6px;',
+      'display:inline-flex;align-items:center;justify-content:center;',
       'background:var(--ae-ws-plaque);color:var(--dsw-alias-state-business-primary);',
       'box-shadow:inset 0 0 0 1px var(--ae-ws-plaque-ring);}',
       'body[data-ae-glass="on"] .ae-sidebar [data-row-key^="workspace:"] > span:first-child svg{',
@@ -844,14 +864,15 @@ window.__ModuleLoader__.load({
       'background:transparent;box-shadow:none;}',
       'body[data-ae-glass="on"] .ae-sidebar [data-row-key]:focus-visible{',
       'outline:2px solid var(--dsw-focus-ring-color);outline-offset:-3px;}',
-      /* The host shell cancels its own inline padding on the scroll region
-         (margin-right:calc(-1 * inline-padding)), which parks the rows ~8px
-         closer to the right edge than to the left. Re-instate the same gutter
-         on the tree so the sheet reads symmetric at any width. */
-      'body[data-ae-glass="on"] .ae-sidebar [role="tree"]{',
-      'margin-inline-end:clamp(6px,1.6%,8px) !important;}',
-      'body[data-ae-glass="on"] [data-sidebar-collapsed]>.ae-sidebar [role="tree"]{',
-      'margin-inline-end:2px !important;}',
+      /* The host scroll area is a 4px | 1fr | (inline-padding - 2px) grid whose
+         negative inline margins land the middle track exactly on the column
+         padding, so the list is already symmetric. An extra inline margin on
+         the tree would narrow that track and slide the icon column left, so no
+         tree margin is applied here (a legacy 6–8px rule was removed).
+         Leading slots are pinned to the host 16×20 box so folder, status and
+         avatar glyphs share one vertical centre line at any row height. */
+      'body[data-ae-glass="on"] .ae-sidebar [data-row-key]>span:first-child{',
+      'flex:none;display:inline-flex;align-items:center;justify-content:center;align-self:center;}',
       /* right rail: the docked right panel is absolutely positioned inside its
          column, so it is inset and rounded here instead of padding the column
          (padding cannot move an absolutely positioned panel). */
