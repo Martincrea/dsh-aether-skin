@@ -23,7 +23,7 @@ window.__ModuleLoader__.load({
 
     var SOURCE = '@local/dsh-aether-skin';
     var STORAGE_KEY = 'dsh-aether-skin.v1';
-    var VERSION = '1.9.3';
+    var VERSION = '1.10.0';
 
     // ══════════════════════════════════════════════════════════════════════
     // 1. Palette — every value is a [light, dark] pair.
@@ -642,11 +642,13 @@ window.__ModuleLoader__.load({
       'body:not([data-ds-dark-theme]) .ae-sky-field{opacity:calc(var(--ae-sky-gain)*.5);}',
       '.ae-sky{position:fixed;inset:0;z-index:2;overflow:hidden;pointer-events:none;mix-blend-mode:screen;}',
       '.ae-sky>div{position:absolute;inset:0;pointer-events:none;background-size:cover;background-position:50% 50%;background-repeat:no-repeat;}',
-      '.ae-sky-field{background-image:var(--ae-band),var(--ae-field);background-size:100% 100%,cover;opacity:calc(var(--ae-sky-gain)*.97);}',
+      '.ae-sky-field{background-image:var(--ae-band),var(--ae-field);background-size:100% 100%,cover;opacity:calc(var(--ae-sky-gain)*.97);',
+      'animation:ae-breathe 26s ease-in-out infinite alternate;}',
       '.ae-sky-twinkle{background-image:' + BAND_URL + ';opacity:calc(var(--ae-sky-gain)*.72);animation:ae-twinkle 17s ease-in-out infinite alternate;}',
       '@keyframes ae-twinkle{from{opacity:calc(var(--ae-sky-gain)*.34);}to{opacity:calc(var(--ae-sky-gain)*.88);}}',
       '.ae-sky-near{background-image:var(--ae-near);opacity:calc(var(--ae-sky-gain)*.96);animation:ae-float 190s ease-in-out infinite alternate;}',
       '@keyframes ae-float{from{transform:translate3d(2.2%,1.6%,0) scale(1.05);}to{transform:translate3d(-1.8%,-1.4%,0) scale(1.07);}}',
+      '@keyframes ae-breathe{from{opacity:calc(var(--ae-sky-gain)*.86);}to{opacity:calc(var(--ae-sky-gain)*1);}}',
 
       /* ── global details that tokens cannot reach ──────────────────── */
       'html{scrollbar-width:thin;scrollbar-color:var(--dsw-alias-scrollbar-bg-l2) transparent;}',
@@ -658,7 +660,7 @@ window.__ModuleLoader__.load({
       '::-webkit-scrollbar-corner{background:transparent;}',
 
       /* ── console shell ────────────────────────────────────────────── */
-      '.ae-page{display:flex;flex-direction:column;gap:26px;width:100%;max-width:760px;padding:4px 0 8px;font-size:14px;line-height:20px;color:var(--dsw-alias-label-primary);',
+      '.ae-page{display:flex;flex-direction:column;gap:30px;width:100%;max-width:760px;padding:4px 0 8px;font-size:14px;line-height:20px;color:var(--dsw-alias-label-primary);',
       'font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI",sans-serif;}',
       '.ae-head{display:flex;align-items:center;gap:12px;}',
       '.ae-mark{flex:0 0 auto;width:36px;height:36px;border-radius:11px;border:.5px solid var(--dsw-alias-border-l2);',
@@ -670,7 +672,7 @@ window.__ModuleLoader__.load({
 
       /* ── rows (host-shaped: hairline between, none at the end) ────── */
       '.ae-rows{display:flex;flex-direction:column;border-top:.5px solid var(--dsw-alias-border-l2);}',
-      '.ae-row{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 0;border-bottom:.5px solid var(--dsw-alias-border-l2);}',
+      '.ae-row{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:18px 0;border-bottom:.5px solid var(--dsw-alias-border-l2);}',
       '.ae-rowmain{display:flex;flex-direction:column;gap:4px;min-width:0;}',
       '.ae-title{font-size:14px;line-height:20px;color:var(--dsw-alias-label-primary);}',
       '.ae-desc{font-size:12px;line-height:18px;color:var(--dsw-alias-label-secondary);}',
@@ -767,12 +769,12 @@ window.__ModuleLoader__.load({
       '--ae-plat-bg:linear-gradient(168deg,rgba(255,255,255,.055),rgba(255,255,255,.014) 34%,rgba(255,255,255,0) 64%),',
       'color-mix(in srgb,var(--dsw-specific-sidebar-fill) 80%,transparent);',
       '--ae-plat-gap:clamp(6px,1.6%,10px);',
-      '--ae-card-inset:4px;',
+      '--ae-card-inset:6px;',
       '--ae-plat-ring:rgba(255,255,255,.13);--ae-plat-hi:rgba(255,255,255,.11);',
       '--ae-plat-edge:inset 0 -1px 0 rgba(0,0,0,.38);',
       '--ae-plat-shadow:0 38px 74px -28px rgba(0,0,0,.88),0 14px 30px -14px rgba(0,0,0,.66),0 3px 8px -2px rgba(0,0,0,.52);',
       '--ae-card-bg:color-mix(in srgb,var(--dsw-alias-bg-layer-2) 46%,transparent);',
-      '--ae-card-ring:rgba(255,255,255,.08);--ae-card-hi:inset 0 1px 0 rgba(255,255,255,.06);',
+      '--ae-card-ring:rgba(255,255,255,.055);--ae-card-hi:inset 0 1px 0 rgba(255,255,255,.05);',
       '--ae-card-shadow:0 10px 22px -18px rgba(0,0,0,.92);',
       '--ae-card-hover-bg:color-mix(in srgb,var(--dsw-alias-bg-layer-2) 68%,transparent);',
       '--ae-card-hover-ring:rgba(255,255,255,.17);--ae-card-hover-shadow:0 22px 40px -18px rgba(0,0,0,.9);',
@@ -795,11 +797,11 @@ window.__ModuleLoader__.load({
       '--ae-plat-bg:linear-gradient(168deg,rgba(255,255,255,.78),rgba(255,255,255,.5) 38%,rgba(255,255,255,.34) 70%,rgba(255,255,255,.44)),',
       'color-mix(in srgb,var(--dsw-specific-sidebar-fill) 72%,transparent);',
       '--ae-plat-gap:clamp(6px,1.6%,10px);',
-      '--ae-card-inset:4px;',
+      '--ae-card-inset:6px;',
       '--ae-plat-ring:rgba(15,23,42,.15);--ae-plat-hi:rgba(255,255,255,.95);',
       '--ae-plat-edge:inset 0 -1px 0 rgba(15,23,42,.07);',
       '--ae-plat-shadow:0 32px 62px -28px rgba(15,23,42,.36),0 10px 22px -14px rgba(15,23,42,.16),0 2px 5px -1px rgba(15,23,42,.10);',
-      '--ae-card-bg:rgba(255,255,255,.66);--ae-card-ring:rgba(15,23,42,.08);',
+      '--ae-card-bg:rgba(255,255,255,.7);--ae-card-ring:rgba(15,23,42,.055);',
       '--ae-card-hi:inset 0 1px 0 rgba(255,255,255,.95);',
       '--ae-card-shadow:0 8px 18px -14px rgba(15,23,42,.32);',
       '--ae-card-hover-bg:rgba(255,255,255,.94);--ae-card-hover-ring:rgba(15,23,42,.15);',
@@ -822,7 +824,7 @@ window.__ModuleLoader__.load({
       'body[data-ae-glass="on"] .ae-sidebar{position:relative !important;isolation:isolate;',
       'box-sizing:border-box !important;',
       'margin:var(--ae-plat-gap) !important;',
-      'padding:clamp(5px,1.1%,8px) clamp(9px,3.2%,16px) clamp(11px,2.4%,16px) !important;',
+      'padding:clamp(8px,1.5%,11px) clamp(12px,3.6%,18px) clamp(15px,3%,20px) !important;',
       'background:transparent !important;border:0 !important;border-radius:0 !important;',
       'overflow:visible !important;}',
       /* one gap variable drives every plate edge: the window gutter, the gap to
@@ -850,7 +852,7 @@ window.__ModuleLoader__.load({
       'body[data-ae-rows="on"] .ae-sidebar [data-row-key]{position:relative;margin-inline:0 !important;',
       'background:transparent !important;box-shadow:none !important;border-radius:0;}',
       'body[data-ae-rows="on"] .ae-sidebar [data-row-key]:before{content:"";position:absolute;z-index:-1;',
-      'inset:1px calc(var(--ae-card-inset,4px) - var(--ae-ring-right-fix,0px)) 1px var(--ae-card-inset,4px);',
+      'inset:2px calc(var(--ae-card-inset,6px) - var(--ae-ring-right-fix,0px)) 2px var(--ae-card-inset,6px);',
       'border-radius:16px;background:var(--ae-card-bg);',
       'box-shadow:0 0 0 1px var(--ae-card-ring),var(--ae-card-hi),var(--ae-card-shadow);',
       'transition:transform 220ms cubic-bezier(.16,1,.3,1),box-shadow 220ms cubic-bezier(.16,1,.3,1),',
@@ -975,7 +977,7 @@ window.__ModuleLoader__.load({
          the composer. */
       'body[data-ae-main="on"] .ae-main{',
       'border-radius:clamp(13px,1.5vw,19px) !important;overflow:hidden !important;',
-      'margin:clamp(4px,.55vw,7px) clamp(5px,.7vw,9px) clamp(4px,.55vw,7px) clamp(5px,.7vw,9px) !important;',
+      'margin:clamp(7px,.9vw,12px) clamp(8px,1.1vw,14px) clamp(7px,.9vw,12px) clamp(8px,1.1vw,14px) !important;',
       'box-shadow:0 0 0 1px var(--dsw-alias-border-l1),0 22px 48px -30px rgba(0,0,0,.72);',
       'background-clip:padding-box !important;}',
       'body[data-ae-main="on"]:not([data-ds-dark-theme]) .ae-main{',
@@ -985,7 +987,8 @@ window.__ModuleLoader__.load({
       'body[data-ae-rows="on"] .ae-sidebar [data-row-key]:before{transition:none;}',
       'body[data-ae-rows="on"] .ae-sidebar [data-row-key]:hover:before{transform:none;}',
       '.ae-live{animation:none;}',
-      '.ae-sky-twinkle{animation:none;opacity:calc(var(--ae-sky-gain)*.6);}','.ae-sky-near{animation:none;}}',
+      '.ae-sky-twinkle{animation:none;opacity:calc(var(--ae-sky-gain)*.6);}','.ae-sky-near{animation:none;}',
+      '.ae-sky-field{animation:none;}}',
     ].join('\n');
 
     // ══════════════════════════════════════════════════════════════════════
