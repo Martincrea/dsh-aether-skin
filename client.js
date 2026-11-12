@@ -23,7 +23,7 @@ window.__ModuleLoader__.load({
 
     var SOURCE = '@local/dsh-aether-skin';
     var STORAGE_KEY = 'dsh-aether-skin.v1';
-    var VERSION = '1.8.0';
+    var VERSION = '1.9.0';
 
     // ══════════════════════════════════════════════════════════════════════
     // 1. Palette — every value is a [light, dark] pair.
@@ -763,7 +763,7 @@ window.__ModuleLoader__.load({
       '.ae-row>.ae-seg,.ae-row>.ae-switch{flex:0 0 auto;}}',
 
       /* ── glass platform — the left workspace floats on its own sheet ─ */
-      'body[data-ae-glass="on"]{',
+      'body[data-ae-glass="on"],body[data-ae-rows="on"]{',
       '--ae-plat-bg:linear-gradient(168deg,rgba(255,255,255,.055),rgba(255,255,255,.014) 34%,rgba(255,255,255,0) 64%),',
       'color-mix(in srgb,var(--dsw-specific-sidebar-fill) 80%,transparent);',
       '--ae-plat-gap:clamp(6px,1.6%,10px);',
@@ -785,13 +785,13 @@ window.__ModuleLoader__.load({
       '--ae-card-sel-ink-shadow:0 0 0 1px rgba(255,255,255,.34),0 12px 26px -14px rgba(0,0,0,.72);',
       /* workspace rows are containers, sessions are leaves: the container
          gets an accent-tinted chip + plaque so the folder reads first */
-      '--ae-ws-bg:color-mix(in srgb,var(--dsw-alias-state-business-primary) 13%,var(--ae-card-bg));',
+      '--ae-ws-bg:color-mix(in srgb,var(--dsw-alias-state-business-primary) 18%,var(--ae-card-bg));',
       '--ae-ws-bg-hover:color-mix(in srgb,var(--dsw-alias-state-business-primary) 20%,var(--ae-card-hover-bg));',
-      '--ae-ws-ring:color-mix(in srgb,var(--dsw-alias-state-business-primary) 30%,transparent);',
+      '--ae-ws-ring:color-mix(in srgb,var(--dsw-alias-state-business-primary) 42%,transparent);',
       '--ae-ws-plaque:color-mix(in srgb,var(--dsw-alias-state-business-primary) 16%,transparent);',
       '--ae-ws-plaque-ring:color-mix(in srgb,var(--dsw-alias-state-business-primary) 28%,transparent);',
       '--ae-ws-glow:drop-shadow(0 0 5px color-mix(in srgb,var(--dsw-alias-state-business-primary) 55%,transparent));}',
-      'body[data-ae-glass="on"]:not([data-ds-dark-theme]){',
+      'body[data-ae-glass="on"]:not([data-ds-dark-theme]),body[data-ae-rows="on"]:not([data-ds-dark-theme]){',
       '--ae-plat-bg:linear-gradient(168deg,rgba(255,255,255,.78),rgba(255,255,255,.5) 38%,rgba(255,255,255,.34) 70%,rgba(255,255,255,.44)),',
       'color-mix(in srgb,var(--dsw-specific-sidebar-fill) 72%,transparent);',
       '--ae-plat-gap:clamp(6px,1.6%,10px);',
@@ -806,12 +806,12 @@ window.__ModuleLoader__.load({
       '--ae-card-hover-shadow:0 20px 36px -18px rgba(15,23,42,.4);',
       '--ae-card-sel-bg:color-mix(in srgb,var(--dsw-alias-state-business-primary) 11%,#fff);',
       '--ae-card-sel-ring:color-mix(in srgb,var(--dsw-alias-state-business-primary) 34%,transparent);',
-      '--ae-card-sel-ink:#12171F;--ae-card-sel-ink-fg:#F5F8FC;',
+      '--ae-card-sel-ink:#3E4753;--ae-card-sel-ink-fg:#F7F9FC;',
       '--ae-card-sel-ink-hi:inset 0 1px 0 rgba(255,255,255,.16);',
-      '--ae-card-sel-ink-shadow:0 0 0 1px rgba(15,23,42,.45),0 12px 26px -14px rgba(15,23,42,.42);',
-      '--ae-ws-bg:color-mix(in srgb,var(--dsw-alias-state-business-primary) 10%,var(--ae-card-bg));',
+      '--ae-card-sel-ink-shadow:0 0 0 1px rgba(15,23,42,.32),0 12px 26px -14px rgba(15,23,42,.38);',
+      '--ae-ws-bg:color-mix(in srgb,var(--dsw-alias-state-business-primary) 14%,var(--ae-card-bg));',
       '--ae-ws-bg-hover:color-mix(in srgb,var(--dsw-alias-state-business-primary) 15%,var(--ae-card-hover-bg));',
-      '--ae-ws-ring:color-mix(in srgb,var(--dsw-alias-state-business-primary) 26%,transparent);',
+      '--ae-ws-ring:color-mix(in srgb,var(--dsw-alias-state-business-primary) 36%,transparent);',
       '--ae-ws-plaque:color-mix(in srgb,var(--dsw-alias-state-business-primary) 12%,#FFFFFF);',
       '--ae-ws-plaque-ring:color-mix(in srgb,var(--dsw-alias-state-business-primary) 30%,transparent);',
       '--ae-ws-glow:drop-shadow(0 1px 3px color-mix(in srgb,var(--dsw-alias-state-business-primary) 40%,transparent));}',
@@ -847,49 +847,61 @@ window.__ModuleLoader__.load({
          the same rounded card, keeps the icon column pixel-identical to the
          host, and — since the inset is equal on both sides — is symmetric even
          if the host list track is a hair off. */
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key]{position:relative;margin-inline:0 !important;',
+      'body[data-ae-rows="on"] .ae-sidebar [data-row-key]{position:relative;margin-inline:0 !important;',
       'background:transparent !important;box-shadow:none !important;border-radius:0;}',
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key]:before{content:"";position:absolute;z-index:-1;',
+      'body[data-ae-rows="on"] .ae-sidebar [data-row-key]:before{content:"";position:absolute;z-index:-1;',
       'inset:1px calc(var(--ae-card-inset,4px) - var(--ae-ring-right-fix,0px)) 1px var(--ae-card-inset,4px);',
       'box-shadow:0 0 0 1px var(--ae-card-ring),var(--ae-card-hi),var(--ae-card-shadow);',
       'transition:transform 220ms cubic-bezier(.16,1,.3,1),box-shadow 220ms cubic-bezier(.16,1,.3,1),',
       'background-color 220ms ease-out;}',
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key][aria-selected="true"]{color:var(--ae-card-sel-ink-fg);}',
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key][aria-selected="true"]:before{',
+      'body[data-ae-rows="on"] .ae-sidebar [data-row-key][aria-selected="true"]{color:var(--ae-card-sel-ink-fg);}',
+      'body[data-ae-rows="on"] .ae-sidebar [data-row-key][aria-selected="true"]:before{',
       'background:var(--ae-card-sel-ink);box-shadow:var(--ae-card-sel-ink-hi),var(--ae-card-sel-ink-shadow);}',
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key][aria-selected="true"] :where(*){',
+      'body[data-ae-rows="on"] .ae-sidebar [data-row-key][aria-selected="true"] :where(*){',
       'color:inherit !important;}',
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key][aria-selected="true"] :where(svg){opacity:.9;}',
+      'body[data-ae-rows="on"] .ae-sidebar [data-row-key][aria-selected="true"] :where(svg){opacity:.9;}',
       /* Hover never touches the selected row: the selected surface is an
          inverted ink card, and an equal-specificity hover background used to
          override it while the text stayed inverted, which made the label
          unreadable ("selected then hovered = invisible text"). */
-      '@media (hover:hover){body[data-ae-glass="on"] .ae-sidebar [data-row-key]:not([aria-selected="true"]):hover:before{',
+      '@media (hover:hover){body[data-ae-rows="on"] .ae-sidebar [data-row-key]:not([aria-selected="true"]):hover:before{',
       'transform:translateY(-2px) scale(1.008);background:var(--ae-card-hover-bg);',
-      'box-shadow:0 0 0 1px var(--ae-card-hover-ring),var(--ae-card-hi),var(--ae-card-hover-shadow);}}',
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key][aria-selected="true"]:hover:before{',
+      'box-shadow:0 0 0 1px var(--ae-card-hover-ring),var(--ae-card-hi),var(--ae-card-hover-shadow);}',
+      'body[data-ae-rows="on"] .ae-sidebar [data-row-key^="workspace:"]:not([aria-selected="true"]):hover:before{',
+      'background:var(--ae-ws-bg-hover);box-shadow:0 0 0 1px var(--ae-ws-ring),inset 0 1px 0 rgba(255,255,255,.12),',
+      '0 20px 34px -18px rgba(0,0,0,.9);}}',
+      'body[data-ae-rows="on"] .ae-sidebar [data-row-key][aria-selected="true"]:hover:before{',
       'transform:translateY(-2.5px) scale(1.008);}',
       /* ── workspace vs conversation: containers lead, leaves follow ─── */
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key^="workspace:"]:before{',
-      'background:var(--ae-ws-bg);',
-      'box-shadow:0 0 0 1px var(--ae-ws-ring),var(--ae-card-hi),var(--ae-card-shadow);}',
+      'body[data-ae-rows="on"] .ae-sidebar [data-row-key^="workspace:"]:before{',
+      'border-radius:14px;background:var(--ae-ws-bg);',
+      'box-shadow:0 0 0 1px var(--ae-ws-ring),inset 0 1px 0 rgba(255,255,255,.1),',
+      '0 14px 26px -18px rgba(0,0,0,.85);}',
+      'body[data-ae-rows="on"]:not([data-ds-dark-theme]) .ae-sidebar [data-row-key^="workspace:"]:before{',
+      'box-shadow:0 0 0 1px var(--ae-ws-ring),inset 0 1px 0 #fff,0 12px 22px -16px rgba(15,23,42,.34);}',
+      '@media (hover:hover){body[data-ae-rows="on"] .ae-sidebar [data-row-key^="workspace:"]:not([aria-selected="true"]):hover:before{',
+      'transform:translateY(-3px);}}',
+      /* a selected container reads with the same ink card as a leaf, so the
+         selection state is legible in both kinds of row */
+      'body[data-ae-rows="on"] .ae-sidebar [data-row-key^="workspace:"][aria-selected="true"]:before{',
+      'background:var(--ae-card-sel-ink);box-shadow:var(--ae-card-sel-ink-hi),var(--ae-card-sel-ink-shadow);}',
+      'body[data-ae-rows="on"] .ae-sidebar [data-row-key^="workspace:"][aria-selected="true"] > span:first-child{',
+      'background:transparent;box-shadow:none;color:inherit;}',
       /* The folder slot is 16px wide in the host grid. The plaque is drawn at
          18px but the slot keeps its original 16px advance (negative inline
          margins on both sides), so the icon centre and the label start of a
          workspace row stay exactly on the same column as a session row. */
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key^="workspace:"] > span:first-child{',
+      'body[data-ae-rows="on"] .ae-sidebar [data-row-key^="workspace:"] > span:first-child{',
       'width:18px;height:18px;margin-inline:-1px;border-radius:6px;',
       'display:inline-flex;align-items:center;justify-content:center;',
       'background:var(--ae-ws-plaque);color:var(--dsw-alias-state-business-primary);',
       'box-shadow:inset 0 0 0 1px var(--ae-ws-plaque-ring);}',
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key^="workspace:"] > span:first-child svg{',
+      'body[data-ae-rows="on"] .ae-sidebar [data-row-key^="workspace:"] > span:first-child svg{',
       'width:13px;height:13px;filter:var(--ae-ws-glow);}',
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key^="workspace:"] > span:nth-child(3){',
+      'body[data-ae-rows="on"] .ae-sidebar [data-row-key^="workspace:"] > span:nth-child(3){',
       'font-weight:600;letter-spacing:-0.005em;}',
-      '@media (hover:hover){body[data-ae-glass="on"] .ae-sidebar [data-row-key^="workspace:"]:not([aria-selected="true"]):hover:before{',
-      'background:var(--ae-ws-bg-hover);}}',
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key^="overflow:"]:before{display:none;}',
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key]:focus-visible{',
+      'body[data-ae-rows="on"] .ae-sidebar [data-row-key^="overflow:"]:before{display:none;}',
+      'body[data-ae-rows="on"] .ae-sidebar [data-row-key]:focus-visible{',
       'outline:2px solid var(--dsw-focus-ring-color);outline-offset:-3px;}',
       /* The host scroll area is a 4px | 1fr | (inline-padding - 2px) grid whose
          negative inline margins land the middle track exactly on the column
@@ -898,7 +910,7 @@ window.__ModuleLoader__.load({
          tree margin is applied here (a legacy 6–8px rule was removed).
          Leading slots are pinned to the host 16×20 box so folder, status and
          avatar glyphs share one vertical centre line at any row height. */
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key]>span:first-child{',
+      'body[data-ae-rows="on"] .ae-sidebar [data-row-key]>span:first-child{',
       'flex:none;display:inline-flex;align-items:center;justify-content:center;align-self:center;}',
       /* right rail: the docked right panel is absolutely positioned inside its
          column, so it is inset and rounded here instead of padding the column
@@ -920,30 +932,30 @@ window.__ModuleLoader__.load({
          Depth is a light layer, not a layout: it only re-tunes rim light,
          plate shadow and card elevation, so switching it can never move a
          control or re-flow the list. */
-      'body[data-ae-glass="on"]{--ae-plat-depth:0;}',
-      'body[data-ae-glass="on"][data-ae-depth="soft"]{',
+      'body[data-ae-rows="on"]{--ae-plat-depth:0;}',
+      'body[data-ae-rows="on"][data-ae-depth="soft"]{',
       '--ae-plat-ring:rgba(255,255,255,.09);--ae-plat-hi:rgba(255,255,255,.07);',
       '--ae-plat-shadow:0 22px 44px -26px rgba(0,0,0,.7),0 8px 18px -12px rgba(0,0,0,.5);',
       '--ae-card-shadow:0 6px 14px -12px rgba(0,0,0,.7);}',
-      'body[data-ae-glass="on"][data-ae-depth="normal"]{--ae-plat-depth:1;}',
-      'body[data-ae-glass="on"][data-ae-depth="strong"]{',
+      'body[data-ae-rows="on"][data-ae-depth="normal"]{--ae-plat-depth:1;}',
+      'body[data-ae-rows="on"][data-ae-depth="strong"]{',
       '--ae-plat-ring:rgba(255,255,255,.23);--ae-plat-hi:rgba(255,255,255,.2);',
       '--ae-plat-edge:inset 0 -1px 0 rgba(0,0,0,.55),inset 0 -14px 24px -18px rgba(0,0,0,.5);',
       '--ae-plat-shadow:0 54px 104px -32px rgba(0,0,0,.98),0 24px 48px -20px rgba(0,0,0,.86),0 8px 16px -4px rgba(0,0,0,.7);',
       '--ae-card-ring:rgba(255,255,255,.13);--ae-card-hi:inset 0 1px 0 rgba(255,255,255,.14);',
       '--ae-card-shadow:0 22px 40px -20px rgba(0,0,0,.98),0 6px 12px -8px rgba(0,0,0,.66);}',
-      'body[data-ae-glass="on"]:not([data-ds-dark-theme])[data-ae-depth="soft"]{',
+      'body[data-ae-rows="on"]:not([data-ds-dark-theme])[data-ae-depth="soft"]{',
       '--ae-plat-ring:rgba(15,23,42,.12);--ae-plat-shadow:0 18px 36px -24px rgba(15,23,42,.28),0 6px 14px -10px rgba(15,23,42,.14);',
       '--ae-card-shadow:0 5px 12px -10px rgba(15,23,42,.3);}',
-      'body[data-ae-glass="on"]:not([data-ds-dark-theme])[data-ae-depth="strong"]{',
+      'body[data-ae-rows="on"]:not([data-ds-dark-theme])[data-ae-depth="strong"]{',
       '--ae-plat-ring:rgba(15,23,42,.26);--ae-plat-hi:rgba(255,255,255,.99);',
       '--ae-plat-edge:inset 0 -1px 0 rgba(15,23,42,.14),inset 0 -12px 22px -18px rgba(15,23,42,.16);',
       '--ae-plat-shadow:0 50px 92px -32px rgba(15,23,42,.5),0 18px 38px -18px rgba(15,23,42,.3),0 4px 10px -2px rgba(15,23,42,.16);',
       '--ae-card-ring:rgba(15,23,42,.15);--ae-card-hi:inset 0 1px 0 #fff;',
       '--ae-card-shadow:0 20px 34px -18px rgba(15,23,42,.44),0 5px 10px -6px rgba(15,23,42,.2);}',
-      '@media (hover:hover){body[data-ae-glass="on"][data-ae-depth="strong"] .ae-sidebar [data-row-key]:not([aria-selected="true"]):hover:before{',
+      '@media (hover:hover){body[data-ae-rows="on"][data-ae-depth="strong"] .ae-sidebar [data-row-key]:not([aria-selected="true"]):hover:before{',
       'transform:translateY(-3.4px) scale(1.012);}',
-      'body[data-ae-glass="on"][data-ae-depth="strong"] .ae-sidebar [data-row-key][aria-selected="true"]:hover:before{',
+      'body[data-ae-rows="on"][data-ae-depth="strong"] .ae-sidebar [data-row-key][aria-selected="true"]:hover:before{',
       'transform:translateY(-3.6px) scale(1.012);}}',
 
       /* ── conversation surface ───────────────────────────────────────
@@ -961,8 +973,8 @@ window.__ModuleLoader__.load({
       'box-shadow:0 0 0 1px var(--dsw-alias-border-l2),0 20px 42px -30px rgba(15,23,42,.3);}',
       /* ── motion budget: honour the system setting ────────────────── */
       '@media (prefers-reduced-motion:reduce){.ae-switch,.ae-knob,.ae-segbtn,.ae-btn,.ae-input{transition:none;}',
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key]:before{transition:none;}',
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key]:hover:before{transform:none;}',
+      'body[data-ae-rows="on"] .ae-sidebar [data-row-key]:before{transition:none;}',
+      'body[data-ae-rows="on"] .ae-sidebar [data-row-key]:hover:before{transform:none;}',
       '.ae-live{animation:none;}',
       '.ae-sky-twinkle{animation:none;opacity:calc(var(--ae-sky-gain)*.6);}','.ae-sky-near{animation:none;}}',
     ].join('\n');
@@ -1553,8 +1565,8 @@ window.__ModuleLoader__.load({
             if (on) document.body.dataset.aeGlass = 'on';
             else delete document.body.dataset.aeGlass;
             document.body.dataset.aeDepth = normaliseDepth(state.depth);
-            if (state.enabled) document.body.dataset.aeMain = 'on';
-            else delete document.body.dataset.aeMain;
+            if (state.enabled) { document.body.dataset.aeMain = 'on'; document.body.dataset.aeRows = 'on'; }
+            else { delete document.body.dataset.aeMain; delete document.body.dataset.aeRows; }
           } catch (err) {
             /* body not mounted yet — the retry below picks it up */
           }
@@ -1621,7 +1633,7 @@ window.__ModuleLoader__.load({
             for (var j = 0; j < rails.length; j += 1) rails[j].classList.remove(RAIL_CLASS);
             var mains = document.querySelectorAll('.' + MAIN_CLASS);
             for (var k = 0; k < mains.length; k += 1) mains[k].classList.remove(MAIN_CLASS);
-            if (document.body) { delete document.body.dataset.aeGlass; delete document.body.dataset.aeMain; }
+            if (document.body) { delete document.body.dataset.aeGlass; delete document.body.dataset.aeMain; delete document.body.dataset.aeRows; }
           } catch (err) {
             /* ignore */
           }
