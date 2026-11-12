@@ -23,7 +23,7 @@ window.__ModuleLoader__.load({
 
     var SOURCE = '@local/dsh-aether-skin';
     var STORAGE_KEY = 'dsh-aether-skin.v1';
-    var VERSION = '1.6.1';
+    var VERSION = '1.6.2';
 
     // ══════════════════════════════════════════════════════════════════════
     // 1. Palette — every value is a [light, dark] pair.
@@ -746,6 +746,7 @@ window.__ModuleLoader__.load({
       /* ── glass platform — the left workspace floats on its own sheet ─ */
       'body[data-ae-glass="on"]{',
       '--ae-plat-bg:linear-gradient(168deg,rgba(255,255,255,.055),rgba(255,255,255,.014) 34%,rgba(255,255,255,0) 64%),',
+      '--ae-plat-gap:clamp(6px,1.6%,10px);',
       'color-mix(in srgb,var(--dsw-specific-sidebar-fill) 80%,transparent);',
       '--ae-plat-ring:rgba(255,255,255,.13);--ae-plat-hi:rgba(255,255,255,.11);',
       '--ae-plat-edge:inset 0 -1px 0 rgba(0,0,0,.38);',
@@ -772,6 +773,7 @@ window.__ModuleLoader__.load({
       '--ae-ws-glow:drop-shadow(0 0 5px color-mix(in srgb,var(--dsw-alias-state-business-primary) 55%,transparent));}',
       'body[data-ae-glass="on"]:not([data-ds-dark-theme]){',
       '--ae-plat-bg:linear-gradient(168deg,rgba(255,255,255,.78),rgba(255,255,255,.5) 38%,rgba(255,255,255,.34) 70%,rgba(255,255,255,.44)),',
+      '--ae-plat-gap:clamp(6px,1.6%,10px);',
       'color-mix(in srgb,var(--dsw-specific-sidebar-fill) 72%,transparent);',
       '--ae-plat-ring:rgba(15,23,42,.15);--ae-plat-hi:rgba(255,255,255,.95);',
       '--ae-plat-edge:inset 0 -1px 0 rgba(15,23,42,.07);',
@@ -798,11 +800,15 @@ window.__ModuleLoader__.load({
          separate, absolutely positioned layer underneath the content. */
       'body[data-ae-glass="on"] .ae-sidebar{position:relative !important;isolation:isolate;',
       'box-sizing:border-box !important;',
+      'margin:var(--ae-plat-gap) !important;',
       'padding:clamp(5px,1.1%,8px) clamp(9px,3.2%,16px) clamp(11px,2.4%,16px) !important;',
       'background:transparent !important;border:0 !important;border-radius:0 !important;',
       'overflow:visible !important;}',
+      /* one gap variable drives every plate edge: the window gutter, the gap to
+         the conversation column and the right rail gutter are then identical
+         by construction instead of relying on two different clamps. */
       'body[data-ae-glass="on"] .ae-sidebar:before{content:"";position:absolute;z-index:-1;',
-      'inset:clamp(2px,.7%,4px) clamp(3px,1.4%,7px) clamp(8px,1.9%,11px);',
+      'inset:0;',
       'border-radius:clamp(12px,5%,18px);background:var(--ae-plat-bg);',
       'box-shadow:0 0 0 1px var(--ae-plat-ring),var(--ae-plat-shadow),inset 0 1px 0 var(--ae-plat-hi),var(--ae-plat-edge);',
       'backdrop-filter:blur(26px) saturate(140%);-webkit-backdrop-filter:blur(26px) saturate(140%);',
@@ -811,38 +817,39 @@ window.__ModuleLoader__.load({
       /* Keep the host's own collapsed padding (18px 10px 6px): the 36px rail
          buttons are positioned against it, so shrinking it moved every icon in
          the rail off its original grid. Only the glass layer is inset. */
-      'body[data-ae-glass="on"] [data-sidebar-collapsed]>.ae-sidebar{padding:18px 10px 6px !important;}',
-      'body[data-ae-glass="on"] [data-sidebar-collapsed]>.ae-sidebar:before{inset:2px 2px 6px;border-radius:12px;}',
-      /* Icon grid: the host lays icon + label out from the row's padded edge.
-         Adding inline margins here would shift each row's icon column 4px to
-         the right of every fixed control above it (toolbar toggle, new-session
-         button, footer actions), so rows keep zero inline margin and only gain
-         vertical breathing room. The gutter comes from the column padding. */
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key]{position:relative;margin-block:2px;margin-inline:0;',
-      /* border-box, not the host's padding-box: the row keeps its 3px
-         transparent paint-inset border, and clipping the fill inside it would
-         leave a 3px gap between the fill and the 1px ring drawn on the box. */
-      'border-radius:12px;background:var(--ae-card-bg);background-clip:border-box;',
+      'body[data-ae-glass="on"] [data-sidebar-collapsed]>.ae-sidebar{padding:18px 10px 6px !important;margin:clamp(4px,.9%,6px) !important;}',
+      'body[data-ae-glass="on"] [data-sidebar-collapsed]>.ae-sidebar:before{inset:0;border-radius:12px;}',
+      /* Card surfaces are painted by a child layer, never by the row box.
+         Reason: the host row's own box is part of the layout grid (3px
+         paint-inset border + 8/9px padding), so any margin, padding or radius
+         we put on it moves the host icons. A ::before inset from the row gives
+         the same rounded card, keeps the icon column pixel-identical to the
+         host, and — since the inset is equal on both sides — is symmetric even
+         if the host list track is a hair off. */
+      'body[data-ae-glass="on"] .ae-sidebar [data-row-key]{position:relative;margin-inline:0 !important;',
+      'background:transparent !important;box-shadow:none !important;border-radius:0;}',
+      'body[data-ae-glass="on"] .ae-sidebar [data-row-key]:before{content:"";position:absolute;z-index:-1;',
+      'inset:1px 4px;border-radius:12px;background:var(--ae-card-bg);',
       'box-shadow:0 0 0 1px var(--ae-card-ring),var(--ae-card-hi),var(--ae-card-shadow);',
       'transition:transform 220ms cubic-bezier(.16,1,.3,1),box-shadow 220ms cubic-bezier(.16,1,.3,1),',
       'background-color 220ms ease-out;}',
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key][aria-selected="true"]{',
-      'transform:translateY(-2px);background:var(--ae-card-sel-ink);color:var(--ae-card-sel-ink-fg);',
-      'box-shadow:var(--ae-card-sel-ink-hi),var(--ae-card-sel-ink-shadow);}',
+      'body[data-ae-glass="on"] .ae-sidebar [data-row-key][aria-selected="true"]{color:var(--ae-card-sel-ink-fg);}',
+      'body[data-ae-glass="on"] .ae-sidebar [data-row-key][aria-selected="true"]:before{',
+      'background:var(--ae-card-sel-ink);box-shadow:var(--ae-card-sel-ink-hi),var(--ae-card-sel-ink-shadow);}',
       'body[data-ae-glass="on"] .ae-sidebar [data-row-key][aria-selected="true"] :where(*){',
       'color:inherit !important;}',
       'body[data-ae-glass="on"] .ae-sidebar [data-row-key][aria-selected="true"] :where(svg){opacity:.9;}',
-      /* The host scroll area clips on the x axis (overflow:hidden auto) and the
-         row now spans the full track, so a horizontal scale would be shaved off
-         at both rounded edges. Depth therefore comes from the lift + ring +
-         shadow only; the icon column never leaves the host grid. */
-      '@media (hover:hover){body[data-ae-glass="on"] .ae-sidebar [data-row-key]:hover{',
-      'transform:translateY(-2.5px);background:var(--ae-card-hover-bg);',
+      /* Hover never touches the selected row: the selected surface is an
+         inverted ink card, and an equal-specificity hover background used to
+         override it while the text stayed inverted, which made the label
+         unreadable ("selected then hovered = invisible text"). */
+      '@media (hover:hover){body[data-ae-glass="on"] .ae-sidebar [data-row-key]:not([aria-selected="true"]):hover:before{',
+      'transform:translateY(-2px) scale(1.008);background:var(--ae-card-hover-bg);',
       'box-shadow:0 0 0 1px var(--ae-card-hover-ring),var(--ae-card-hi),var(--ae-card-hover-shadow);}}',
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key][aria-selected="true"]:hover{',
-      'transform:translateY(-3px);}',
+      'body[data-ae-glass="on"] .ae-sidebar [data-row-key][aria-selected="true"]:hover:before{',
+      'transform:translateY(-2.5px) scale(1.008);}',
       /* ── workspace vs conversation: containers lead, leaves follow ─── */
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key^="workspace:"]{',
+      'body[data-ae-glass="on"] .ae-sidebar [data-row-key^="workspace:"]:before{',
       'background:var(--ae-ws-bg);',
       'box-shadow:0 0 0 1px var(--ae-ws-ring),var(--ae-card-hi),var(--ae-card-shadow);}',
       /* The folder slot is 16px wide in the host grid. The plaque is drawn at
@@ -858,10 +865,9 @@ window.__ModuleLoader__.load({
       'width:13px;height:13px;filter:var(--ae-ws-glow);}',
       'body[data-ae-glass="on"] .ae-sidebar [data-row-key^="workspace:"] > span:nth-child(3){',
       'font-weight:600;letter-spacing:-0.005em;}',
-      '@media (hover:hover){body[data-ae-glass="on"] .ae-sidebar [data-row-key^="workspace:"]:hover{',
+      '@media (hover:hover){body[data-ae-glass="on"] .ae-sidebar [data-row-key^="workspace:"]:not([aria-selected="true"]):hover:before{',
       'background:var(--ae-ws-bg-hover);}}',
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key^="overflow:"]{',
-      'background:transparent;box-shadow:none;}',
+      'body[data-ae-glass="on"] .ae-sidebar [data-row-key^="overflow:"]:before{display:none;}',
       'body[data-ae-glass="on"] .ae-sidebar [data-row-key]:focus-visible{',
       'outline:2px solid var(--dsw-focus-ring-color);outline-offset:-3px;}',
       /* The host scroll area is a 4px | 1fr | (inline-padding - 2px) grid whose
@@ -878,9 +884,9 @@ window.__ModuleLoader__.load({
          (padding cannot move an absolutely positioned panel). */
       'body[data-ae-glass="on"] .ae-rail{background:transparent !important;}',
       'body[data-ae-glass="on"] .ae-rail [data-sidebar-right-panel]:not([data-sidebar-right-panel="fullscreen"]){',
-      'top:clamp(3px,.8%,5px) !important;bottom:clamp(7px,1.6%,11px) !important;',
-      'right:clamp(4px,1.2%,8px) !important;left:auto !important;',
-      'width:calc(100% - clamp(8px,2.4%,16px)) !important;',
+      'top:var(--ae-plat-gap) !important;bottom:var(--ae-plat-gap) !important;',
+      'right:var(--ae-plat-gap) !important;left:auto !important;',
+      'width:calc(100% - var(--ae-plat-gap) * 2) !important;',
       'border-radius:clamp(13px,4%,17px) !important;overflow:hidden !important;',
       'background:var(--ae-plat-bg) !important;',
       'box-shadow:0 0 0 1px var(--ae-plat-ring),var(--ae-plat-shadow),inset 0 1px 0 var(--ae-plat-hi),var(--ae-plat-edge);',
@@ -891,8 +897,8 @@ window.__ModuleLoader__.load({
 
       /* ── motion budget: honour the system setting ────────────────── */
       '@media (prefers-reduced-motion:reduce){.ae-switch,.ae-knob,.ae-segbtn,.ae-btn,.ae-input{transition:none;}',
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key]{transition:none;}',
-      'body[data-ae-glass="on"] .ae-sidebar [data-row-key],body[data-ae-glass="on"] .ae-sidebar [data-row-key]:hover{transform:none;}',
+      'body[data-ae-glass="on"] .ae-sidebar [data-row-key]:before{transition:none;}',
+      'body[data-ae-glass="on"] .ae-sidebar [data-row-key]:hover:before{transform:none;}',
       '.ae-live{animation:none;}',
       '.ae-sky-twinkle{animation:none;opacity:calc(var(--ae-sky-gain)*.6);}','.ae-sky-near{animation:none;}}',
     ].join('\n');

@@ -126,12 +126,12 @@
 
 | 元素 | 做法 | 深色 | 浅色 |
 | --- | --- | --- | --- |
-| 玻璃板 `.ae-sidebar::before` | 绝对定位、四边内缩 `clamp()`（随侧栏宽度等比缩放）、`border-radius:clamp(12px,5%,18px)`、`backdrop-filter:blur(26px) saturate(140%)`、`z-index:-1`（在内容之下） | 银白 7.5% → 0% 的斜向高光 + `specific-sidebar-fill` 76% 半透明底；1px 13% 白环 + 三层投影（`0 38px 74px -28px` / `0 14px 30px -14px` / `0 3px 8px -2px`） + 顶部内高光 + 底部内暗边 | 白 78% → 44% 斜向高光 + 侧栏底色 72%；1px 15% 墨环 + 三层蓝黑投影 + 顶部白内高光 |
+| 玻璃板 `.ae-sidebar::before` | 绝对定位、`inset:0` 填满列的留白盒（四边留白由 `.ae-sidebar` 的 `margin:var(--ae-plat-gap)` 统一给出，随侧栏宽度等比缩放）、`border-radius:clamp(12px,5%,18px)`、`backdrop-filter:blur(26px) saturate(140%)`、`z-index:-1`（在内容之下） | 银白 7.5% → 0% 的斜向高光 + `specific-sidebar-fill` 76% 半透明底；1px 13% 白环 + 三层投影（`0 38px 74px -28px` / `0 14px 30px -14px` / `0 3px 8px -2px`） + 顶部内高光 + 底部内暗边 | 白 78% → 44% 斜向高光 + 侧栏底色 72%；1px 15% 墨环 + 三层蓝黑投影 + 顶部白内高光 |
 | 版面内缩 `.ae-sidebar` | 列本身保留宿主 grid 轨道，只加 `padding:clamp()`（全部用百分比基准 → 随容器宽度等比缩放）+ `box-sizing:border-box`；透明背景、不裁切、不改圆角 | — | — |
-| 卡片 `[data-row-key]` | `border-radius:12px`、`background-clip:padding-box`（沿用宿主的内缩绘制区）、1px 环 + 顶部 1px 内高光（模拟板材厚度）+ 短投影 | `bg-layer-2` 46% 半透明底 | `rgba(255,255,255,.66)` 底 |
-| 悬停 | `translateY(-2.5px)`、底色提亮、投影加深（不做横向缩放：宿主滚动区 `overflow:hidden auto` 会裁掉放大的圆角） | 环提到 17% 白 | 环提到 15% 墨 |
-| 选中 | `translateY(-2px)`、**反相表面**：深色模式下卡片变成近白（`#EDF1F7`）配深墨文字（`#0A0E14`），浅色模式下变成近黑（`#12171F`）配亮字（`#F5F8FC`）；行内所有子孙 `color:inherit`，图标 `opacity:.9` | 近白 + 深墨 + 55% 白内高光 | 近黑 + 亮字 + 16% 白内高光 |
-| 右栏玻璃板 `[data-rightbar-col] [data-sidebar-right-panel]` | 右栏是「轨道不是盒子」：面板绝对定位（`right:0`），**加 padding 推不动它**，所以直接给面板本身设 `top/bottom/right` 内缩 + `width:calc(100% - clamp(8px,2.4%,16px))`（左右等值）+ 圆角 + 同一套玻璃材质；`fullscreen` 形态除外，保持贴边 | 同左栏玻璃材质 | 同左栏玻璃材质 |
+| 卡片 `[data-row-key]::before` | 卡片面画在行内的 `::before` 上（`inset:1px 4px`、`border-radius:12px`、`z-index:-1`），行本身不再有 margin / 背景 / 圆角——因此左右内缩天然对称，且完全不参与宿主排版 | `bg-layer-2` 46% 半透明底 | `rgba(255,255,255,.66)` 底 |
+| 悬停 | 卡片层 `translateY(-2px) scale(1.008)`（`inset` 留出的 4px 正好容纳放大量，不会被滚动区裁切）、底色提亮、投影加深 | 环提到 17% 白 | 环提到 15% 墨 |
+| 选中 | **反相表面**：深色模式下卡片变成近白（`#EDF1F7`）配深墨文字（`#0A0E14`），浅色模式下变成近黑（`#12171F`）配亮字（`#F5F8FC`）；行内所有子孙 `color:inherit`，图标 `opacity:.9` | 近白 + 深墨 + 55% 白内高光 | 近黑 + 亮字 + 16% 白内高光 |
+| 右栏玻璃板 `[data-rightbar-col] [data-sidebar-right-panel]` | 右栏是「轨道不是盒子」：面板绝对定位（`right:0`），**加 padding 推不动它**，所以直接给面板本身设 `top/bottom/right:var(--ae-plat-gap)` + `width:calc(100% - var(--ae-plat-gap) * 2)`（四边等距）+ 圆角 + 同一套玻璃材质；`fullscreen` 形态除外，保持贴边 | 同左栏玻璃材质 | 同左栏玻璃材质 |
 | 右栏内容面 | `[data-dockkit-host=dock] / [data-dockkit-pane] / [data-dockkit-empty]` 背景透明，让玻璃板成为唯一表面 | — | — |
 | 过渡 | `transform / box-shadow / background-color` 统一 `220ms cubic-bezier(.16,1,.3,1)` | — | — |
 
@@ -144,10 +144,13 @@
   2. 折叠态曾把宿主 `padding:18px 10px 6px` 压成 `5px 3px`，36px 轨道按钮整体左移 7px、上移 13px → 折叠态恢复宿主内缩，只内缩玻璃层；
   3. 工作区文件夹小牌是 18×18，比宿主 16px 的图标槽宽 2px，会把标题右推 1px → 用 `margin-inline:-1px` 让槽位仍占 16px 步进，图标中心线与标题起点保持不变（svg 仍居中）。
   另外统一 `[data-row-key]>span:first-child` 为 `16×20` flex 居中，让文件夹 / 状态点 / 头像共用一条垂直中心线。
-  4. 行卡片占满列表轨道后，悬停若再做 `scale(1.012)` 会被宿主滚动区（`overflow:hidden auto`）裁掉左右圆角 → 悬停只保留 `translateY(-2.5px)` 与投影加深，缩放交给选中态的反相表面表达；图标列因此始终落在宿主栅格上，不会随悬停左右抖动。
+  4. 行卡片占满列表轨道后，悬停若再做 `scale(1.012)` 会被宿主滚动区（`overflow:hidden auto`）裁掉左右圆角 → 缩放改到卡片层并收敛到 `1.008`（内缩 4px 足够容纳），图标列因此始终落在宿主栅格上，不会随悬停左右抖动。
+- **统一留白（v1.6.2）**：左右两块玻璃板原来各用一套 `clamp()` 内缩（左板 `3–7px`、右板 `4–8px`），窗口宽度变化时两套百分比会走出不同结果。现在合并成一个变量 `--ae-plat-gap:clamp(6px,1.6%,10px)`：左列 `margin` 四边、右栏面板 `top/bottom/right` 与 `width` 全部引用它，于是「到窗口边」「到对话列」「左右栏彼此」的间距在数学上恒等，缩放窗口也不会出现一侧宽一侧窄。玻璃面本身改成 `inset:0` 填满这个留白盒，圆角与投影仍只画在 `::before` 上。
+- **卡片绘制层（v1.6.2）**：卡片面从「行盒子自己的背景」改成「行内 `::before` 绝对定位层」，行盒子的 margin / background / border-radius 全部归零。这样做的两个好处：① 卡片左右内缩 `4px` 由 `inset` 决定，天然左右对称，不再依赖宿主列表轨道左右是否严格相等；② 行盒子不参与任何绘制与位移，宿主原有的图标列、hover 背景、拖拽落点、焦点环全部保持原生几何。
+- **选中后悬停变「隐形字」（v1.6.2 修复）**：选中规则与悬停规则曾同为 `(0,4,1)` 特异性、悬停规则在后，于是「选中 + 悬停」时背景被换回半透明 hover 底、文字却仍是反相的深墨色 → 字与底重叠不可读。现在悬停选择器显式排除选中行（`:not([aria-selected="true"])`），选中行悬停只做位移与投影，反相表面与文字颜色始终成对。
 - **右栏同款（v1.3.0）**：右栏的面板是绝对定位的（注释里写明 right column is a track, not a box），给列加 padding 不会移动它，所以改为直接内缩面板盒：`right/bottom` 内缩 + `width:calc(100% - 两个内缩之和)` 保证左右等距，再套同一套 `--ae-plat-*` 材质；`[data-sidebar-right-panel="fullscreen"]` 形态跳过（全屏面板本来就该贴边）。面板内部 dock 面改透明，玻璃板成为唯一表面。
 - **不透明度来源**：宿主侧栏根节点自带不透明底（`specific-sidebar-fill`），会盖住玻璃板，所以 `.ae-sidebar>*` 统一改透明，让玻璃层成为唯一表面。
-- **层级**：面板自身不加 `z-index`；卡片悬停用 `position:relative + transform` 在行内抬起。星河层在面板之上（`screen` 混合），玻璃的模糊只作用于面板背后——背后是静态的 frame/桌面，所以滚动时不会持续重算，成本只有一层合成。
+- **层级**：面板自身不加 `z-index`；卡片层用 `position:absolute + z-index:-1` 贴在行内、在文字之下、在玻璃板之上（列上的 `isolation:isolate` 把负层锁在侧栏内部，不会掉到页面背景后面）。星河层在面板之上（`screen` 混合），玻璃的模糊只作用于面板背后——背后是静态的 frame/桌面，所以滚动时不会持续重算，成本只有一层合成。
 - **可读性**：卡片底始终是「侧栏底色 + 少量 layer-2」，文字仍走 `label-primary / label-secondary` 令牌；浅色下卡片是白 64% 不透明，深色下是 40% + 深底，两种主题下正文对比度的来源不变（只改变了底色明度，未改变文字颜色）。
 - **动效预算**：位移 2.5px（悬停）/ 3px（选中悬停）、无横向缩放，全程 `transform`，不触发布局；`prefers-reduced-motion` 下过渡置 none、位移归零。
 - **失效兜底**：若宿主未来改动 AppFrame 的 DOM 结构导致定位不到侧栏，标记步骤静默跳过，皮肤其余部分照常工作，不会报错也不会误伤别的元素。
@@ -288,6 +291,8 @@ dsh-aether-skin/
 - ✅ 离线冒烟测试（stub 了 `window.__ModuleLoader__` / `document` / React / ctx）：124 个令牌均为合法 `{light,dark}` 字符串对；`overrideTokens` 只调用一次并带上 source；CSS 花括号配平、无宿主 hash class；两个槽注册参数正确（`settings.section` id=`aether-skin`、order=55；`shell.overlay` id=`aether-atmosphere`、order=900）。
 - ✅ 星河测试（v1.5.0 深空版）：3 个星点字段独立解码校验——远景 420 颗、银河带 260 颗、前景 18 颗（viewBox 2400×1600、无 NaN、不含 `<g>`/`<polygon>` 航天器图元、远景与银河带最大半径 ≤2、前景 ≤3.4 即**不存在光晕圆盘**、六档色温齐全）；CSS 断言含 `--ae-near`、`@keyframes ae-float`、浅色 `multiply` 覆盖、`reduced-motion` 同时停掉闪烁与漂移，且**不含** `filter:blur(.6px)`；`.ae-sky` 仅在 `galaxy` 开启时渲染，浓度档位映射 0.80/1.05/1.42、未知档位回落 0.80，`pointer-events:none` 全程保持。
 - ✅ 层级区分（v1.5.0）：CSS 断言存在 `[data-row-key^="workspace:"]` 的强调色表面、`--ae-ws-plaque` 玻璃小牌与 13px 文件夹图标发光规则，以及 `[data-row-key^="overflow:"]` 的中性兜底；工作区与对话的标题左边界、行高、缩进均未改动。
+- ✅ 统一留白（v1.6.2）：断言存在 `--ae-plat-gap:clamp(6px,1.6%,10px)`、左列 `margin:var(--ae-plat-gap) !important`、玻璃面 `inset:0`、右栏 `width:calc(100% - var(--ae-plat-gap) * 2)`。
+- ✅ 卡片绘制层（v1.6.2）：CSS 断言卡片面为行内 `::before`（`inset:1px 4px;border-radius:12px`），行盒子 `margin-inline:0 !important` 且无背景/投影；断言悬停选择器带 `:not([aria-selected="true"])`，防止「选中 + 悬停」再次把文字压成不可读。
 - ✅ 图标对齐（v1.6.1）：CSS 断言行卡片为 `margin-block:2px;margin-inline:0`，且不再出现 `margin:2px 4px` 与旧规则 `margin-inline-end:clamp(6px,1.6%,8px)`；折叠态为 `padding:18px 10px 6px`；文件夹小牌为 `width:18px;height:18px;margin-inline:-1px`；行首槽位统一为 flex 居中；悬停为 `translateY(-2.5px)` 且不再出现 `scale(1.012)`（避免被宿主滚动区裁切）。
 - ✅ 布局回归（v1.2.1）：CSS 断言 `.ae-sidebar` 只用 `padding:clamp(...)` 内缩、不再出现 `margin:10px 9px 12px`，玻璃面来自 `::before`（`z-index:-1`、`pointer-events:none`），折叠态 `[data-sidebar-collapsed]>.ae-sidebar` 有独立内缩；`findSidebar()` 增加三道防线（必须找到含 `[data-shell-bottom]` 的真 AppFrame、优先取包住 `[role=tree]/[data-row-key]` 的列、列宽不得超过 frame 宽度的 60%），避免把整壳容器误标成侧栏。
 - ✅ 双板与留白（v1.3.0）：右栏面板按 `[data-sidebar-right-panel]` 做等距内缩（`right` 与 `width:calc(100% - 2×inset)` 联动，`fullscreen` 除外），dock 面透明；左栏 `[role="tree"]` 补 `margin-inline-end:clamp(6px,1.6%,8px)` 抵消宿主滚动区的负右边距，左右留白相等；卡片悬停提升到 `-2.5px / 1.012`，玻璃板改为三层投影 + 内外双高光。

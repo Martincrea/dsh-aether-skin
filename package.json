@@ -1,6 +1,6 @@
 {
   "name": "@local/dsh-aether-skin",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "AETHER · 静默科技 — a deep-space, silver-metal DSH skin: token-driven palette, glass workspace panels, a faint star-river background, and an in-app skin console.",
   "type": "module",
   "main": "index.js",
