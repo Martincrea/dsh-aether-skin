@@ -23,7 +23,7 @@ window.__ModuleLoader__.load({
 
     var SOURCE = '@local/dsh-aether-skin';
     var STORAGE_KEY = 'dsh-aether-skin.v1';
-    var VERSION = '1.6.3';
+    var VERSION = '1.6.4';
 
     // ══════════════════════════════════════════════════════════════════════
     // 1. Palette — every value is a [light, dark] pair.
@@ -748,6 +748,7 @@ window.__ModuleLoader__.load({
       '--ae-plat-bg:linear-gradient(168deg,rgba(255,255,255,.055),rgba(255,255,255,.014) 34%,rgba(255,255,255,0) 64%),',
       'color-mix(in srgb,var(--dsw-specific-sidebar-fill) 80%,transparent);',
       '--ae-plat-gap:clamp(6px,1.6%,10px);',
+      '--ae-card-inset:4px;',
       '--ae-plat-ring:rgba(255,255,255,.13);--ae-plat-hi:rgba(255,255,255,.11);',
       '--ae-plat-edge:inset 0 -1px 0 rgba(0,0,0,.38);',
       '--ae-plat-shadow:0 38px 74px -28px rgba(0,0,0,.88),0 14px 30px -14px rgba(0,0,0,.66),0 3px 8px -2px rgba(0,0,0,.52);',
@@ -775,6 +776,7 @@ window.__ModuleLoader__.load({
       '--ae-plat-bg:linear-gradient(168deg,rgba(255,255,255,.78),rgba(255,255,255,.5) 38%,rgba(255,255,255,.34) 70%,rgba(255,255,255,.44)),',
       'color-mix(in srgb,var(--dsw-specific-sidebar-fill) 72%,transparent);',
       '--ae-plat-gap:clamp(6px,1.6%,10px);',
+      '--ae-card-inset:4px;',
       '--ae-plat-ring:rgba(15,23,42,.15);--ae-plat-hi:rgba(255,255,255,.95);',
       '--ae-plat-edge:inset 0 -1px 0 rgba(15,23,42,.07);',
       '--ae-plat-shadow:0 32px 62px -28px rgba(15,23,42,.36),0 10px 22px -14px rgba(15,23,42,.16),0 2px 5px -1px rgba(15,23,42,.10);',
@@ -829,7 +831,7 @@ window.__ModuleLoader__.load({
       'body[data-ae-glass="on"] .ae-sidebar [data-row-key]{position:relative;margin-inline:0 !important;',
       'background:transparent !important;box-shadow:none !important;border-radius:0;}',
       'body[data-ae-glass="on"] .ae-sidebar [data-row-key]:before{content:"";position:absolute;z-index:-1;',
-      'inset:1px 4px;border-radius:12px;background:var(--ae-card-bg);',
+      'inset:1px calc(var(--ae-card-inset,4px) - var(--ae-ring-right-fix,0px)) 1px var(--ae-card-inset,4px);',
       'box-shadow:0 0 0 1px var(--ae-card-ring),var(--ae-card-hi),var(--ae-card-shadow);',
       'transition:transform 220ms cubic-bezier(.16,1,.3,1),box-shadow 220ms cubic-bezier(.16,1,.3,1),',
       'background-color 220ms ease-out;}',
@@ -1312,6 +1314,7 @@ window.__ModuleLoader__.load({
         var hostObserver = null;
         var hostTimer = null;
         var hostTries = 0;
+        var hostResize = null;
         var SIDEBAR_CLASS = 'ae-sidebar';
         var RAIL_CLASS = 'ae-rail';
 
@@ -1360,6 +1363,7 @@ window.__ModuleLoader__.load({
           var side = findSidebar();
           if (!side || typeof side.classList === 'undefined') return null;
           if (!side.classList.contains(SIDEBAR_CLASS)) side.classList.add(SIDEBAR_CLASS);
+          syncRingFix(side);
           var frame = side.parentElement;
           if (frame && hostObserver === null && typeof MutationObserver !== 'undefined') {
             hostObserver = new MutationObserver(function () {
@@ -1367,7 +1371,39 @@ window.__ModuleLoader__.load({
             });
             hostObserver.observe(frame, { childList: true });
           }
+          if (frame && hostResize === null && typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+            hostResize = function () {
+              var el = tagSidebar();
+              if (el !== null) syncRingFix(el);
+            };
+            window.addEventListener('resize', hostResize);
+          }
           return side;
+        }
+
+        // The host list keeps a scrollbar gutter on the right
+        // (padding-right: calc(inline-padding - scrollbar-width - 2px)). With
+        // overlay scrollbars nothing is ever painted there, so the session
+        // cards end up visibly tighter / looser on the right than on the left.
+        // Instead of guessing that width we measure the real row box once and
+        // publish the difference as --ae-ring-right-fix: only the card surface
+        // (::before) moves, so the icon column stays on the host grid.
+        function syncRingFix(side) {
+          if (!side || typeof side.querySelector !== 'function') return;
+          var row = side.querySelector('[data-row-key]:not([data-row-key^="overflow:"])');
+          if (!row || typeof row.getBoundingClientRect !== 'function') return;
+          try {
+            var cr = side.getBoundingClientRect();
+            var rr = row.getBoundingClientRect();
+            if (!(cr.width > 0) || !(rr.width > 0)) return;
+            var fix = Math.round((cr.right - rr.right) - (rr.left - cr.left));
+            if (!isFinite(fix)) return;
+            if (fix > 14) fix = 14;
+            if (fix < -14) fix = -14;
+            side.style.setProperty('--ae-ring-right-fix', fix + 'px');
+          } catch (err) {
+            /* layout not ready yet */
+          }
         }
 
         // The right column is a dock track, not a box: its panel is absolutely
@@ -1413,7 +1449,9 @@ window.__ModuleLoader__.load({
               return;
             }
             tagRail();
-            if (tagSidebar() === null && hostTries < 40) {
+            var tagged = tagSidebar();
+            if (tagged !== null) syncRingFix(tagged);
+            if (tagged === null && hostTries < 40) {
               hostTries += 1;
               hostTimer = window.setTimeout(step, 250);
             }
@@ -1429,6 +1467,14 @@ window.__ModuleLoader__.load({
               /* ignore */
             }
             hostObserver = null;
+          }
+          if (hostResize !== null && typeof window !== 'undefined' && typeof window.removeEventListener === 'function') {
+            try {
+              window.removeEventListener('resize', hostResize);
+            } catch (err) {
+              /* ignore */
+            }
+            hostResize = null;
           }
           if (hostTimer !== null) {
             try {

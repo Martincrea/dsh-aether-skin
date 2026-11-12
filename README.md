@@ -146,6 +146,7 @@
   另外统一 `[data-row-key]>span:first-child` 为 `16×20` flex 居中，让文件夹 / 状态点 / 头像共用一条垂直中心线。
   4. 行卡片占满列表轨道后，悬停若再做 `scale(1.012)` 会被宿主滚动区（`overflow:hidden auto`）裁掉左右圆角 → 缩放改到卡片层并收敛到 `1.008`（内缩 4px 足够容纳），图标列因此始终落在宿主栅格上，不会随悬停左右抖动。
 - **统一留白（v1.6.2）**：左右两块玻璃板原来各用一套 `clamp()` 内缩（左板 `3–7px`、右板 `4–8px`），窗口宽度变化时两套百分比会走出不同结果。现在合并成一个变量 `--ae-plat-gap:clamp(6px,1.6%,10px)`：左列 `margin` 四边、右栏面板 `top/bottom/right` 与 `width` 全部引用它，于是「到窗口边」「到对话列」「左右栏彼此」的间距在数学上恒等，缩放窗口也不会出现一侧宽一侧窄。玻璃面本身改成 `inset:0` 填满这个留白盒，圆角与投影仍只画在 `::before` 上。
+- **自适应留白补偿（v1.6.4）**：宿主的会话列表给右侧滚动条留了 `padding-right: calc(inline-padding - scrollbar-width - 2px)` 的槽位，而实际跑在悬浮滚动条下时这个槽位里什么都没有——于是卡片右边缘与玻璃板的间距会比左边大几个像素（看起来「右边空得多」或「右边贴太紧」）。与其猜滚动条宽度，插件在运行时量一次：`syncRingFix()` 取第一行的 `getBoundingClientRect()` 与侧栏列比较，把「右间距 − 左间距」写进列上的 `--ae-ring-right-fix`（限制在 ±14px），卡片面 `::before` 的右内缩随之为 `calc(var(--ae-card-inset) - var(--ae-ring-right-fix))`。**只移动卡片面，不动行盒子**，所以图标列仍落在宿主栅格上；窗口尺寸变化时（`resize`）与宿主重挂载时重新测量。
 - **回归修复（v1.6.3）**：v1.6.2 把 `--ae-plat-gap` 插进了 `--ae-plat-bg` 这个**跨行**的声明中间，CSS 自定义属性的值会一直吃到最近的 `;`，于是渐变与间隙变量被合并成一条非法值：玻璃面退化成透明矩形、`margin:var(--ae-plat-gap)` 因变量未定义而变成 0——「立体玻璃感消失」就是这么来的。现在变量声明排在完整渐变之后，并新增冒烟守卫：`--ae-plat-bg` 的值里不得再出现 `--ae-plat-gap`，且两个主题各必须声明一次该间隙变量。
 - **卡片绘制层（v1.6.2）**：卡片面从「行盒子自己的背景」改成「行内 `::before` 绝对定位层」，行盒子的 margin / background / border-radius 全部归零。这样做的两个好处：① 卡片左右内缩 `4px` 由 `inset` 决定，天然左右对称，不再依赖宿主列表轨道左右是否严格相等；② 行盒子不参与任何绘制与位移，宿主原有的图标列、hover 背景、拖拽落点、焦点环全部保持原生几何。
 - **选中后悬停变「隐形字」（v1.6.2 修复）**：选中规则与悬停规则曾同为 `(0,4,1)` 特异性、悬停规则在后，于是「选中 + 悬停」时背景被换回半透明 hover 底、文字却仍是反相的深墨色 → 字与底重叠不可读。现在悬停选择器显式排除选中行（`:not([aria-selected="true"])`），选中行悬停只做位移与投影，反相表面与文字颜色始终成对。
@@ -292,6 +293,7 @@ dsh-aether-skin/
 - ✅ 离线冒烟测试（stub 了 `window.__ModuleLoader__` / `document` / React / ctx）：124 个令牌均为合法 `{light,dark}` 字符串对；`overrideTokens` 只调用一次并带上 source；CSS 花括号配平、无宿主 hash class；两个槽注册参数正确（`settings.section` id=`aether-skin`、order=55；`shell.overlay` id=`aether-atmosphere`、order=900）。
 - ✅ 星河测试（v1.5.0 深空版）：3 个星点字段独立解码校验——远景 420 颗、银河带 260 颗、前景 18 颗（viewBox 2400×1600、无 NaN、不含 `<g>`/`<polygon>` 航天器图元、远景与银河带最大半径 ≤2、前景 ≤3.4 即**不存在光晕圆盘**、六档色温齐全）；CSS 断言含 `--ae-near`、`@keyframes ae-float`、浅色 `multiply` 覆盖、`reduced-motion` 同时停掉闪烁与漂移，且**不含** `filter:blur(.6px)`；`.ae-sky` 仅在 `galaxy` 开启时渲染，浓度档位映射 0.80/1.05/1.42、未知档位回落 0.80，`pointer-events:none` 全程保持。
 - ✅ 层级区分（v1.5.0）：CSS 断言存在 `[data-row-key^="workspace:"]` 的强调色表面、`--ae-ws-plaque` 玻璃小牌与 13px 文件夹图标发光规则，以及 `[data-row-key^="overflow:"]` 的中性兜底；工作区与对话的标题左边界、行高、缩进均未改动。
+- ✅ 自适应留白（v1.6.4）：断言卡片面右内缩引用 `--ae-ring-right-fix`（`calc(var(--ae-card-inset,4px) - var(--ae-ring-right-fix,0px))`）、存在 `syncRingFix()` 测量函数、两个主题各自声明 `--ae-card-inset:4px`。
 - ✅ 声明完整性（v1.6.3）：断言 `--ae-plat-bg` 声明里不再混入其他自定义属性（正则 `/--ae-plat-bg:[^;]*--ae-plat-gap/` 必须不匹配），且 `--ae-plat-gap` 在深/浅两套变量里各恰好出现一次。
 - ✅ 统一留白（v1.6.2）：断言存在 `--ae-plat-gap:clamp(6px,1.6%,10px)`、左列 `margin:var(--ae-plat-gap) !important`、玻璃面 `inset:0`、右栏 `width:max(0px, calc(100% - var(--ae-plat-gap) * 2))`。
 - ✅ 卡片绘制层（v1.6.2）：CSS 断言卡片面为行内 `::before`（`inset:1px 4px;border-radius:12px`），行盒子 `margin-inline:0 !important` 且无背景/投影；断言悬停选择器带 `:not([aria-selected="true"])`，防止「选中 + 悬停」再次把文字压成不可读。
