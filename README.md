@@ -16,7 +16,7 @@
 1. 克隆仓库到本地任意目录：
 
    ```bash
-   git clone https://github.com/miaoguoqing/dsh-aether-skin.git
+   git clone https://github.com/Martincrea/dsh-aether-skin.git
    ```
 
 2. 在 DSH 里以 **本地 bundle** 方式安装：插件管理 → 安装本地 bundle → 选中 `dsh-aether-skin/` 目录。
