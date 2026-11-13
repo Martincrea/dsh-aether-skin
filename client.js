@@ -23,7 +23,7 @@ window.__ModuleLoader__.load({
 
     var SOURCE = '@local/dsh-aether-skin';
     var STORAGE_KEY = 'dsh-aether-skin.v1';
-    var VERSION = '1.10.0';
+    var VERSION = '1.10.1';
 
     // ══════════════════════════════════════════════════════════════════════
     // 1. Palette — every value is a [light, dark] pair.
@@ -153,11 +153,12 @@ window.__ModuleLoader__.load({
       '--dsw-alias-file-diff-deleted-gutter': ['#FDF3F3', '#1C1214'],
       '--dsw-alias-file-diff-deleted-marker': ['#C23B3B', '#F18585'],
 
-      // scrollbars
-      '--dsw-alias-scrollbar-bg-l1': ['#DDE2EA', '#1D2530'],
-      '--dsw-alias-scrollbar-bg-l2': ['#DDE2EA', '#1D2530'],
-      '--dsw-alias-scrollbar-hover-l1': ['#C5CED9', '#3B4859'],
-      '--dsw-alias-scrollbar-hover-l2': ['#C5CED9', '#3B4859'],
+      // scrollbars: the thumb has to be readable on both shells, so these are
+      // translucent silver (dark) / slate (light) rather than surface colours
+      '--dsw-alias-scrollbar-bg-l1': ['rgba(74,90,110,.46)', 'rgba(198,211,228,.44)'],
+      '--dsw-alias-scrollbar-bg-l2': ['rgba(74,90,110,.40)', 'rgba(198,211,228,.38)'],
+      '--dsw-alias-scrollbar-hover-l1': ['rgba(52,66,84,.66)', 'rgba(224,234,246,.70)'],
+      '--dsw-alias-scrollbar-hover-l2': ['rgba(52,66,84,.58)', 'rgba(224,234,246,.62)'],
 
       // empty-state artwork
       '--dsw-alias-illustration-background': ['#F2F4F8', '#11161E'],
@@ -651,12 +652,19 @@ window.__ModuleLoader__.load({
       '@keyframes ae-breathe{from{opacity:calc(var(--ae-sky-gain)*.86);}to{opacity:calc(var(--ae-sky-gain)*1);}}',
 
       /* ── global details that tokens cannot reach ──────────────────── */
-      'html{scrollbar-width:thin;scrollbar-color:var(--dsw-alias-scrollbar-bg-l2) transparent;}',
+      /* Scrollbars: the host leaves them to the platform, and the previous
+         skin tokens were surface colours (#1D2530) — a near-black thumb on a
+         near-black shell, i.e. invisible. Both the standard-property path
+         (scrollbar-width/colour, what current Chromium uses) and the
+         ::-webkit path (older engines) now paint a translucent silver/slate
+         thumb with a 4px optical inset, and keep the track click-through. */
+      'html{scrollbar-width:thin;scrollbar-color:var(--dsw-alias-scrollbar-bg-l1) transparent;}',
       '::selection{background:var(--dsw-alias-bg-document-selection);color:var(--dsw-alias-label-primary);}',
-      '::-webkit-scrollbar{width:10px;height:10px;}',
+      '::-webkit-scrollbar{width:12px;height:12px;}',
       '::-webkit-scrollbar-track{background:transparent;}',
-      '::-webkit-scrollbar-thumb{background:var(--dsw-alias-scrollbar-bg-l2);border:3px solid transparent;background-clip:content-box;border-radius:999px;}',
-      '::-webkit-scrollbar-thumb:hover{background:var(--dsw-alias-scrollbar-hover-l2);border:3px solid transparent;background-clip:content-box;}',
+      '::-webkit-scrollbar-thumb{background:var(--dsw-alias-scrollbar-bg-l1);border:4px solid transparent;background-clip:content-box;border-radius:999px;min-height:36px;}',
+      '::-webkit-scrollbar-thumb:hover{background:var(--dsw-alias-scrollbar-hover-l1);border:4px solid transparent;background-clip:content-box;}',
+      '::-webkit-scrollbar-thumb:active{background:var(--dsw-alias-scrollbar-hover-l1);border:3px solid transparent;background-clip:content-box;}',
       '::-webkit-scrollbar-corner{background:transparent;}',
 
       /* ── console shell ────────────────────────────────────────────── */

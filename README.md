@@ -221,6 +221,21 @@
 
 三条约束：① 只动留白与透明度，不动宿主网格轨道，图标仍然对齐；② 呼吸只作用在氛围层（`.ae-sky-field`），文字与卡片不参与任何缩放/位移；③ 26 秒一个来回，低于人眼「注意到是动画」的阈值，更像环境光变化。
 
+### 3.7 滚动条可读性（v1.10.1）
+
+宿主本身不写全局滚动条样式，滚动条完全由平台的 `scrollbar-color` / `::-webkit-scrollbar` 决定。v1.10.0 及以前，皮肤把这几个令牌填成了「表面色」——深色 `#1D2530`、悬停 `#3B4859`——于是拇指是近黑色，画在 `#05070A` 的背景上等于隐形：滚动区还在、滚轮也还能滚，但看不到、也抓不到滚动条。
+
+| 项 | 值 |
+| --- | --- |
+| `--dsw-alias-scrollbar-bg-l1` | 深 `rgba(198,211,228,.44)` / 浅 `rgba(74,90,110,.46)` |
+| `--dsw-alias-scrollbar-bg-l2` | 深 `rgba(198,211,228,.38)` / 浅 `rgba(74,90,110,.40)` |
+| `--dsw-alias-scrollbar-hover-l1` | 深 `rgba(224,234,246,.70)` / 浅 `rgba(52,66,84,.66)` |
+| `--dsw-alias-scrollbar-hover-l2` | 深 `rgba(224,234,246,.62)` / 浅 `rgba(52,66,84,.58)` |
+| 轨道 | 透明（不拦截点击） |
+| 拇指形状 | `12px` 通道、`4px` 透明描边内缩为 `4px` 视觉宽度、`999px` 圆角、`min-height:36px` |
+
+做法要点：① 颜色改成半透明银（深色）/ 板岩灰（浅色），既能在两种底上看见，又不会像系统默认条那样抢视线；② 同时写 `scrollbar-color:var(--dsw-alias-scrollbar-bg-l1) transparent`（当前 Chromium 走这条）与 `::-webkit-scrollbar-*`（旧引擎兜底），两条路径同一个色源；③ 悬停/按住时提高不透明度，拖动时手感更明确；④ 只改令牌与滚动条伪元素，不动任何布局轨道，所以内容宽度、卡片对位都不受影响。
+
 ## 4. 版式与组件
 
 | 组件 | 规则 |
@@ -347,6 +362,7 @@ dsh-aether-skin/
 - ✅ 对话区圆角（v1.8.0）：断言 `.ae-main` 规则存在、`border-radius:clamp(13px,1.5vw,19px)`、默认 `body[data-ae-glass]` 不设置（平面为默认）、`body[data-ae-main="on"]` 默认发布、`enabled:false` 时两条属性都清除。
 - ✅ 立体强度（v1.7.0）：断言三档预设选择器存在、`--ae-plat-depth:1`（标准档标记）、强烈档悬停位移 `translateY(-3.4px) scale(1.012)`、中英文案键 `depth*` 齐全；stub 侧断言首次挂载即发布 `body[data-ae-depth]`，缺省值落到 `strong`。
 - ✅ 自适应留白（v1.6.4）：断言卡片面右内缩引用 `--ae-ring-right-fix`（`calc(var(--ae-card-inset,4px) - var(--ae-ring-right-fix,0px))`）、存在 `syncRingFix()` 测量函数、两个主题各自声明 `--ae-card-inset:4px`。
+- ✅ 滚动条可读性（v1.10.1）：断言四个滚动条令牌均为半透明 `rgba(...)`（不再是 `#1D2530` 这类表面色）、CSS 含 `scrollbar-width:thin;scrollbar-color:var(--dsw-alias-scrollbar-bg-l1) transparent` 与 `::-webkit-scrollbar-thumb`（`border:4px solid transparent;background-clip:content-box`），且 `node --check` 通过、CSS 花括号 408/408。
 - ✅ 声明完整性（v1.6.3）：断言 `--ae-plat-bg` 声明里不再混入其他自定义属性（正则 `/--ae-plat-bg:[^;]*--ae-plat-gap/` 必须不匹配），且 `--ae-plat-gap` 在深/浅两套变量里各恰好出现一次。
 - ✅ 统一留白（v1.6.2）：断言存在 `--ae-plat-gap:clamp(6px,1.6%,10px)`、左列 `margin:var(--ae-plat-gap) !important`、玻璃面 `inset:0`、右栏 `width:max(0px, calc(100% - var(--ae-plat-gap) * 2))`。
 - ✅ 卡片绘制层（v1.6.2）：CSS 断言卡片面为行内 `::before`（`inset:1px 4px;border-radius:12px`），行盒子 `margin-inline:0 !important` 且无背景/投影；断言悬停选择器带 `:not([aria-selected="true"])`，防止「选中 + 悬停」再次把文字压成不可读。
